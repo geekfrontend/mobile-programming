@@ -1,0 +1,59 @@
+## 📌 Pertemuan 2: Struktur Kontrol - Percabangan
+
+Struktur kontrol digunakan untuk mengatur alur program berdasarkan kondisi tertentu.
+
+### `if`, `else if`, dan `else`
+
+Digunakan untuk menjalankan kode berdasarkan kondisi:
+
+```js
+let nilai = 85;
+if (nilai >= 90) {
+  console.log("A");
+} else if (nilai >= 80) {
+  console.log("B");
+} else {
+  console.log("C");
+}
+```
+
+### Operator Ternary (`? :`)
+
+Operator ternary adalah cara singkat untuk menulis `if...else`:
+
+```js
+let status = nilai >= 80 ? "Lulus" : "Gagal";
+console.log(status);
+```
+
+### `switch case`
+
+Digunakan untuk menangani banyak kondisi dengan lebih rapi:
+
+```js
+let hari = "Senin";
+switch (hari) {
+  case "Senin":
+    console.log("Hari kerja");
+    break;
+  case "Sabtu":
+  case "Minggu":
+    console.log("Hari libur");
+    break;
+  default:
+    console.log("Hari tidak valid");
+}
+```
+
+### 🎯 Tantangan
+
+Buat program yang meminta pengguna memasukkan angka, lalu cek apakah angka tersebut **genap atau ganjil**! 🚀
+
+```js
+let angka = 7;
+console.log(angka % 2 === 0 ? "Genap" : "Ganjil");
+```
+
+---
+
+Itulah materi **Pertemuan 1 dan 2**! Pastikan untuk mencoba latihan dan memahami konsepnya dengan baik. Happy coding! 🎉
