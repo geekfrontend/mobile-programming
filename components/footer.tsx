@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { CommandIcon } from "lucide-react";
 
 export function Footer() {
@@ -9,12 +8,9 @@ export function Footer() {
           <CommandIcon className="sm:block hidden w-5 h-5 text-muted-foreground" />
           <p className="text-center">
             Build by{" "}
-            <Link
-              className="px-1 underline underline-offset-2"
-              href="https://harkewauran.space"
-            >
-              harkewauran
-            </Link>
+            <span className="px-1 underline underline-offset-2">
+              unikadelasalle
+            </span>
             .
           </p>
         </div>
