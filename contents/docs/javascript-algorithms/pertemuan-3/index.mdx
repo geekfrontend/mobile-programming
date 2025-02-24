@@ -1,1 +1,83 @@
-Comming Soon
+## 📌 Pertemuan 3: Struktur Kontrol - Perulangan (Loops)
+
+Perulangan digunakan untuk mengeksekusi blok kode secara berulang. Ini berguna ketika Anda ingin mengulang proses tertentu tanpa harus menulis kode yang sama berkali-kali.
+
+### Jenis-jenis Perulangan
+
+1. **`for` loop**
+
+Digunakan ketika kita tahu berapa kali perulangan harus dilakukan.
+
+```js
+for (let i = 1; i <= 5; i++) {
+  console.log("Iterasi ke-" + i);
+}
+```
+
+Penjelasan:
+
+- `let i = 1`: Inisialisasi variabel penghitung.
+- `i <= 5`: Kondisi perulangan.
+- `i++`: Increment (menambah nilai i setiap iterasi).
+
+2. **`while` loop**
+
+Digunakan ketika jumlah iterasi tidak diketahui sebelumnya, dan bergantung pada suatu kondisi.
+
+```js
+let j = 1;
+while (j <= 5) {
+  console.log("Iterasi ke-" + j);
+  j++;
+}
+```
+
+3. **`do...while` loop**
+
+Memastikan blok kode dijalankan setidaknya sekali, meskipun kondisi salah sejak awal.
+
+```js
+let k = 1;
+do {
+  console.log("Iterasi ke-" + k);
+  k++;
+} while (k <= 5);
+```
+
+### Perulangan Bersarang (Nested Loops)
+
+Kita bisa menggunakan perulangan di dalam perulangan.
+
+```js
+for (let i = 1; i <= 3; i++) {
+  for (let j = 1; j <= 3; j++) {
+    console.log(`i: ${i}, j: ${j}`);
+  }
+}
+```
+
+### Kontrol Perulangan
+
+1. **`break`**: Menghentikan perulangan sebelum waktunya.
+
+```js
+for (let i = 1; i <= 10; i++) {
+  if (i === 5) break;
+  console.log(i);
+}
+```
+
+2. **`continue`**: Melewati iterasi saat ini dan langsung lanjut ke iterasi berikutnya.
+
+```js
+for (let i = 1; i <= 10; i++) {
+  if (i % 2 === 0) continue;
+  console.log(i); // hanya mencetak angka ganjil
+}
+```
+
+### Latihan
+
+1. Buatlah perulangan `for` untuk mencetak angka dari 1 hingga 10.
+2. Modifikasi kode tersebut agar hanya mencetak angka genap.
+3. Cobalah menggunakan `while` loop untuk menyelesaikan tantangan yang sama.
