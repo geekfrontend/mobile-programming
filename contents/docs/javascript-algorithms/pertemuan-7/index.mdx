@@ -1,1 +1,39 @@
-Comming Soon
+## 📌 Pertemuan 7: Pengenalan OOP (Object-Oriented Programming)
+
+OOP memungkinkan kamu membuat struktur program berbasis objek dengan pendekatan class dan instance.
+
+### 📚 Class & Constructor
+
+```js
+class Student {
+  constructor(name, id) {
+    this.name = name;
+    this.id = id;
+  }
+
+  greet() {
+    console.log(`Hello, I'm ${this.name}`);
+  }
+}
+
+const student1 = new Student("Budi", "12345");
+student1.greet();
+```
+
+### 🧬 Pewarisan (Inheritance)
+
+```js
+class ActiveStudent extends Student {
+  constructor(name, id, semester) {
+    super(name, id);
+    this.semester = semester;
+  }
+}
+```
+
+<Note title="Latihan">
+  Buat class `Animal` lalu turunkan menjadi `Cat` dan `Dog`. Berikan
+  masing-masing method `sound()`.
+</Note>
+
+---
