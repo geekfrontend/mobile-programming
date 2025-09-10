@@ -9,7 +9,7 @@ import { SheetClose } from "@/components/ui/sheet";
 export const NAVLINKS = [
   {
     title: "Documentation",
-    href: `/docs/javascript-algorithms`,
+    href: `/docs/mobile-programming`,
   },
 ];
 

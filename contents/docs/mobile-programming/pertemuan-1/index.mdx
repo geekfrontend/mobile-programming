@@ -1,0 +1,28 @@
+---
+title: Pertemuan 1 - Pengantar TypeScript
+description: Dasar-dasar TypeScript untuk pemrograman yang lebih aman dan terstruktur.
+---
+
+## 📌 Pertemuan 1: Pengantar TypeScript
+
+TypeScript adalah **superset dari JavaScript** yang menambahkan fitur **static typing**. Dengan TypeScript, kode menjadi lebih aman, terstruktur, dan mudah dipelihara.
+
+### Apa itu TypeScript?
+
+- Dikembangkan oleh **Microsoft**.
+- Menambahkan **type system** ke JavaScript.
+- Membantu menghindari bug dengan mengecek tipe data saat menulis kode.
+- Bisa digunakan di **frontend** (React, Vue, Angular) maupun **backend** (Node.js).
+
+### Contoh Dasar TypeScript
+
+```ts
+let nama: string = "Budi";
+let umur: number = 25;
+let aktif: boolean = true;
+
+function sapa(user: string): string {
+  return "Halo, " + user;
+}
+
+console.log(sapa(nama));
