@@ -1,1 +1,111 @@
-## Coming Soon
+---
+title: Pertemuan 2 - TypeScript Lanjutan
+description: Memahami tipe data lanjutan seperti Array, Object, Interface, dan Generic di TypeScript.
+---
+
+## 📌 Pertemuan 2: TypeScript Lanjutan
+
+Setelah memahami dasar-dasar TypeScript, sekarang kita masuk ke fitur yang lebih lanjut.  
+Fitur-fitur ini membuat kode lebih **terstruktur**, **mudah dikelola**, dan **fleksibel**.
+
+---
+
+### 🔹 Array & Object
+
+```ts
+let numbers: number[] = [1, 2, 3, 4, 5];
+
+let student: { name: string; age: number } = {
+  name: "Michael",
+  age: 20,
+};
+```
+
+Array digunakan untuk menyimpan banyak nilai, sedangkan Object menyimpan pasangan `key-value`.
+
+---
+
+### 🔹 Interface
+
+`interface` digunakan untuk mendefinisikan struktur data agar lebih konsisten.  
+
+```ts
+interface User {
+  name: string;
+  age: number;
+  isActive: boolean;
+}
+
+const user1: User = {
+  name: "Sarah",
+  age: 22,
+  isActive: true,
+};
+```
+
+---
+
+### 🔹 Type Alias vs Interface
+
+Selain `interface`, kita juga bisa menggunakan `type`:  
+
+```ts
+type Product = {
+  name: string;
+  price: number;
+  stock: number;
+};
+
+const book: Product = {
+  name: "Learning React Native",
+  price: 75000,
+  stock: 10,
+};
+```
+
+**Perbedaan utama:**  
+- `interface` bisa di-*extend* (pewarisan).  
+- `type` lebih fleksibel (bisa union/intersection).  
+
+---
+
+### 🔹 Generic
+
+Generic membuat fungsi/kelas lebih fleksibel tanpa kehilangan keamanan tipe.  
+
+```ts
+function wrap<T>(value: T): T[] {
+  return [value];
+}
+
+console.log(wrap<string>("Hello"));
+console.log(wrap<number>(123));
+```
+
+➡️ `T` adalah placeholder untuk tipe data yang akan ditentukan saat fungsi dipanggil.
+
+---
+
+### 🔹 Enum
+
+`enum` digunakan untuk mendefinisikan kumpulan nilai yang tetap.  
+
+```ts
+enum Role {
+  ADMIN,
+  USER,
+  GUEST,
+}
+
+let role: Role = Role.ADMIN;
+console.log(role); // 0
+```
+
+---
+
+### 🎯 Latihan
+
+1. Buat `interface Product` dengan field: `name`, `price`, `stock`.  
+2. Buat array berisi beberapa produk.  
+3. Buat fungsi `printProducts(products: Product[]): void` yang menampilkan daftar produk.  
+4. Tambahkan `enum Category` (misalnya: `BOOK`, `ELECTRONICS`, `FASHION`) untuk mengategorikan setiap produk.  

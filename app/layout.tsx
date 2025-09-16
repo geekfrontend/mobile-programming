@@ -20,7 +20,7 @@ const monoFont = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Programming Algorithm ",
+  title: "Mobile Programming ",
 };
 
 export default function RootLayout({

@@ -18,11 +18,11 @@ export const ROUTES: EachRoute[] = [
         href: "/pertemuan-1",
       },
       {
-        title: "Pertemuan 2: Coming Soon",
+        title: "Pertemuan 2: TypeScript Lanjutan",
         href: "/pertemuan-2",
       },
       {
-        title: "Pertemuan 3: Coming Soon",
+        title: "Pertemuan 3: Membuat Project dengan Expo",
         href: "/pertemuan-3",
       },
       {

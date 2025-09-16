@@ -1,28 +1,85 @@
 ---
 title: Pertemuan 1 - Pengantar TypeScript
-description: Dasar-dasar TypeScript untuk pemrograman yang lebih aman dan terstruktur.
+description: Memahami dasar-dasar TypeScript untuk menulis kode yang lebih aman, terstruktur, dan mudah dipelihara.
 ---
 
 ## 📌 Pertemuan 1: Pengantar TypeScript
 
-TypeScript adalah **superset dari JavaScript** yang menambahkan fitur **static typing**. Dengan TypeScript, kode menjadi lebih aman, terstruktur, dan mudah dipelihara.
+TypeScript adalah **superset dari JavaScript** yang dikembangkan oleh **Microsoft**.  
+Artinya, semua kode JavaScript valid juga merupakan kode TypeScript, tetapi TypeScript menambahkan fitur tambahan seperti **type system** dan **fitur OOP modern**.
 
-### Apa itu TypeScript?
+Dengan TypeScript, developer dapat menulis kode yang lebih aman, lebih mudah dipahami, dan lebih terstruktur.
 
-- Dikembangkan oleh **Microsoft**.
-- Menambahkan **type system** ke JavaScript.
-- Membantu menghindari bug dengan mengecek tipe data saat menulis kode.
-- Bisa digunakan di **frontend** (React, Vue, Angular) maupun **backend** (Node.js).
+---
 
-### Contoh Dasar TypeScript
+### 🔑 Kenapa Belajar TypeScript?
+
+- **Type Checking** → membantu mendeteksi error lebih awal sebelum dijalankan.  
+- **Produktivitas meningkat** berkat fitur autocomplete dan IntelliSense di VS Code.  
+- **Lebih terstruktur** saat mengembangkan aplikasi skala besar.  
+- Mendukung fitur modern seperti *interface*, *enum*, *generic*, dan *decorator*.  
+- Bisa digunakan di **frontend (React, Vue, Angular)** maupun **backend (Node.js, Deno, Bun)**.  
+
+---
+
+### ✍️ Contoh Dasar TypeScript
 
 ```ts
-let nama: string = "Budi";
-let umur: number = 25;
-let aktif: boolean = true;
+let name: string = "John";
+let age: number = 21;
+let isActive: boolean = true;
 
-function sapa(user: string): string {
-  return "Halo, " + user;
+function hello(user: string): string {
+  return `Hello, ${user}!`;
 }
 
-console.log(sapa(nama));
+console.log(hello(name));
+```
+
+➡️ Setiap variabel dan parameter diberi **tipe data**.  
+Jika kita coba memberikan nilai yang salah (misalnya `age = "dua puluh satu"`), TypeScript akan memberi error **sebelum kode dijalankan**.
+
+---
+
+### 📚 Tipe Data Dasar di TypeScript
+
+1. **String** → `"Hello World"`  
+2. **Number** → `123` atau `3.14`  
+3. **Boolean** → `true` atau `false`  
+4. **Array** → `let numbers: number[] = [1, 2, 3]`  
+5. **Object** → `let user: { name: string; age: number } = { name: "Alice", age: 20 }`  
+6. **Any** → tipe fleksibel (tidak disarankan)  
+
+---
+
+### 🛠️ Kompilasi TypeScript ke JavaScript
+
+1. Install TypeScript secara global:
+   ```bash
+   npm install -g typescript
+   ```
+
+2. Buat file `hello.ts`:
+   ```ts
+   let message: string = "Hello TypeScript!";
+   console.log(message);
+   ```
+
+3. Compile ke JavaScript:
+   ```bash
+   tsc hello.ts
+   ```
+
+4. Jalankan:
+   ```bash
+   node hello.js
+   ```
+
+---
+
+### 🎯 Latihan
+
+1. Buat file `exercise1.ts`.  
+2. Deklarasikan variabel dengan tipe `string`, `number`, dan `boolean`.  
+3. Buat fungsi `calculateSquareArea(side: number): number`.  
+4. Compile dan jalankan hasilnya.  

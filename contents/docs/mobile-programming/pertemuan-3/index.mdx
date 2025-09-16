@@ -1,1 +1,91 @@
-## Coming Soon
+---
+title: Pertemuan 3 - Membuat Project dengan Expo
+description: Langkah awal membuat aplikasi React Native menggunakan Expo.
+---
+
+## 📌 Pertemuan 3: Membuat Project dengan Expo
+
+Setelah memahami dasar TypeScript, kita akan mulai membuat project **React Native** menggunakan **Expo**.  
+Expo adalah framework yang mempermudah pembuatan aplikasi mobile dengan React Native.  
+Dengan Expo, kita bisa langsung membuat dan menjalankan aplikasi tanpa perlu konfigurasi rumit seperti Android Studio atau Xcode di awal.
+
+---
+
+### 🔹 Membuat Project Baru dengan Expo
+
+Gunakan perintah berikut untuk membuat project baru:
+
+```bash
+npx create-expo-app MyApp
+```
+
+Setelah selesai, masuk ke folder project:
+
+```bash
+cd MyApp
+```
+
+Lalu jalankan aplikasi:
+
+```bash
+npm start
+```
+
+atau:
+
+```bash
+npx expo start
+```
+
+Expo akan menampilkan **QR Code** di terminal/browser yang bisa dipindai menggunakan aplikasi **Expo Go** di Android/iOS.
+
+---
+
+### 🔹 Struktur Project Expo
+
+- **App.ts** → file utama aplikasi.  
+- **assets/** → folder untuk gambar, ikon, dan font.  
+- **package.json** → berisi daftar dependency dan script.  
+
+---
+
+### 🔹 Contoh Kode Awal
+
+```jsx
+import { Text, View, StyleSheet } from "react-native";
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Hello React Native 👋</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#f0f0f0",
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});
+```
+
+➡️ Dengan kode ini, kita sudah bisa menampilkan teks sederhana di layar emulator atau device.
+
+---
+
+### 🎯 Latihan
+
+1. Buat project baru dengan perintah:  
+   ```bash
+   npx create-expo-app MyApp
+   ```
+2. Jalankan di emulator atau smartphone dengan Expo Go.  
+3. Ubah teks di `App.ts` menjadi nama kamu sendiri.  
+4. Tambahkan **StyleSheet** agar tampilan lebih menarik (misalnya background color berbeda).  
