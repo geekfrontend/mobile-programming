@@ -26,7 +26,7 @@ export const ROUTES: EachRoute[] = [
         href: "/pertemuan-3",
       },
       {
-        title: "Pertemuan 4: Coming Soon",
+        title: "Pertemuan 4: Komponen Bawaan React Native",
         href: "/pertemuan-4",
       },
       {

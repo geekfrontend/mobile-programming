@@ -1,1 +1,179 @@
-## Coming Soon
+---
+title: Pertemuan 4 - Komponen Bawaan React Native
+description: Mengenal komponen bawaan React Native seperti View, Text, Image, TextInput, Button, dan ScrollView.
+---
+
+## 📌 Pertemuan 4: Komponen Bawaan React Native
+
+React Native sudah menyediakan **komponen bawaan** yang berfungsi sebagai building blocks untuk membangun tampilan aplikasi.  
+Pada pertemuan ini, kita akan membahas komponen-komponen dasar, kemudian menggunakannya dalam studi kasus kecil.
+
+---
+
+## 🔹 Komponen Dasar React Native
+
+### 1. View
+
+`View` adalah komponen paling dasar yang berfungsi sebagai **container** atau wadah.  
+Mirip dengan elemen `<div>` pada HTML.
+
+```jsx
+import { View } from "react-native";
+
+<View style={{ padding: 20, backgroundColor: "#eee" }}>
+  <Text>Inside a View</Text>
+</View>;
+```
+
+---
+
+### 2. Text
+
+`Text` digunakan untuk menampilkan teks.  
+Hampir semua teks dalam aplikasi harus dibungkus dengan `Text`.
+
+```jsx
+import { Text } from "react-native";
+
+<Text style={{ fontSize: 18, fontWeight: "bold" }}>Hello React Native</Text>;
+```
+
+---
+
+### 3. Image
+
+`Image` digunakan untuk menampilkan gambar, bisa dari lokal maupun dari URL/URI.
+
+```jsx
+import { Image } from "react-native";
+
+<Image
+  source={{ uri: "https://ui.shadcn.com/avatars/02.png" }}
+  style={{ width: 80, height: 80, borderRadius: 40 }}
+/>;
+```
+
+---
+
+### 4. TextInput
+
+`TextInput` digunakan untuk menerima input teks dari pengguna.
+
+```jsx
+import { TextInput } from "react-native";
+
+<TextInput
+  placeholder="Enter your name"
+  style={{ borderWidth: 1, borderColor: "#ccc", padding: 8, margin: 10 }}
+/>;
+```
+
+---
+
+### 5. Button
+
+`Button` adalah tombol sederhana dengan event `onPress`.
+
+```jsx
+import { Button } from "react-native";
+
+<Button title="Click Me" onPress={() => alert("Button pressed!")} />;
+```
+
+---
+
+### 6. ScrollView
+
+`ScrollView` digunakan untuk membuat konten bisa digulir.  
+Cocok jika konten lebih panjang dari layar.
+
+```jsx
+import { ScrollView, Text } from "react-native";
+
+<ScrollView>
+  {Array.from({ length: 10 }, (_, i) => (
+    <Text key={i}>Item {i + 1}</Text>
+  ))}
+</ScrollView>;
+```
+
+---
+
+## 📌 Studi Kasus: Profile Card
+
+Sekarang mari kita gabungkan semua komponen di atas menjadi sebuah tampilan **Profile Card sederhana**.
+
+```jsx
+import {
+  View,
+  Text,
+  Image,
+  TextInput,
+  Button,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+
+export default function App() {
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>My Profile Card</Text>
+
+      <View style={styles.card}>
+        <Image
+          source={{ uri: "https://ui.shadcn.com/avatars/02.png" }}
+          style={styles.avatar}
+        />
+        <Text style={styles.name}>John Doe</Text>
+        <Text style={styles.role}>Mobile Developer</Text>
+
+        <TextInput placeholder="Update status..." style={styles.input} />
+
+        <Button title="Save Status" onPress={() => alert("Status updated!")} />
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  card: {
+    alignItems: "center",
+    backgroundColor: "#f9f9f9",
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  avatar: { width: 100, height: 100, borderRadius: 50, marginBottom: 10 },
+  name: { fontSize: 20, fontWeight: "bold" },
+  role: { fontSize: 16, color: "#555", marginBottom: 10 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    width: "100%",
+    padding: 8,
+    marginVertical: 10,
+    borderRadius: 5,
+  },
+});
+```
+
+➡️ Dengan kode ini, kita sudah membuat **Profile Card** yang berisi gambar, teks, input, dan tombol.
+
+---
+
+## 🎯 Latihan
+
+1. Buat tampilan **Profile Card** seperti contoh di atas, lalu modifikasi:
+
+   - Ganti nama dan role sesuai identitasmu.
+   - Tambahkan teks deskripsi singkat di bawah role.
+   - Ubah warna tombol dan gaya teks sesuai kreativitasmu.
+
+2. Tambahkan **ScrollView** jika ingin menampilkan beberapa card sekaligus.
+
+3. (Opsional) Coba tambahkan gambar background untuk membuat tampilan lebih menarik.
