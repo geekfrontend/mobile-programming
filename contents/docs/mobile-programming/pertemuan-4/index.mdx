@@ -5,105 +5,107 @@ description: Mengenal komponen bawaan React Native seperti View, Text, Image, Te
 
 ## 📌 Pertemuan 4: Komponen Bawaan React Native
 
-React Native sudah menyediakan **komponen bawaan** yang berfungsi sebagai building blocks untuk membangun tampilan aplikasi.  
-Pada pertemuan ini, kita akan membahas komponen-komponen dasar, kemudian menggunakannya dalam studi kasus kecil.
+React Native menyediakan komponen dasar yang menjadi building blocks tampilan aplikasi. Pertemuan ini fokus memahami perilaku, props penting, dan praktik terbaik dalam mengombinasikan komponen-komponen tersebut.
 
 ---
 
-## 🔹 Komponen Dasar React Native
+### 🎯 Tujuan Pembelajaran
 
-### 1. View
+- Menjelaskan fungsi komponen inti seperti `View`, `Text`, `Image`, `TextInput`, `Button`, dan `ScrollView`.  
+- Menggunakan styling dasar (`StyleSheet`) untuk mengatur layout & tipografi.  
+- Mengelola state sederhana melalui `useState` untuk meng-handle input pengguna.  
+- Menggabungkan komponen dasar menjadi tampilan mini (profile card) yang responsif.
 
-`View` adalah komponen paling dasar yang berfungsi sebagai **container** atau wadah.  
-Mirip dengan elemen `<div>` pada HTML.
+---
 
-```jsx
+### 🧠 Komponen Dasar & Props Penting
+
+#### 1. View – Container Layout
+
+```tsx
 import { View } from "react-native";
 
-<View style={{ padding: 20, backgroundColor: "#eee" }}>
+<View style={{ padding: 16, backgroundColor: "#eee", borderRadius: 8 }}>
   <Text>Inside a View</Text>
-</View>;
+</View>
 ```
 
----
+Props berguna: `style`, `pointerEvents`, `onLayout` (membaca ukuran komponen).
 
-### 2. Text
+#### 2. Text – Menampilkan Teks
 
-`Text` digunakan untuk menampilkan teks.  
-Hampir semua teks dalam aplikasi harus dibungkus dengan `Text`.
-
-```jsx
+```tsx
 import { Text } from "react-native";
 
-<Text style={{ fontSize: 18, fontWeight: "bold" }}>Hello React Native</Text>;
+<Text style={{ fontSize: 18, fontWeight: "bold" }}>
+  Hello React Native
+</Text>
 ```
 
----
+Gunakan `numberOfLines` untuk membatasi baris, `ellipsizeMode` untuk mengatur pemotongan teks.
 
-### 3. Image
+#### 3. Image – Gambar Lokal & Remote
 
-`Image` digunakan untuk menampilkan gambar, bisa dari lokal maupun dari URL/URI.
-
-```jsx
+```tsx
 import { Image } from "react-native";
 
 <Image
   source={{ uri: "https://ui.shadcn.com/avatars/02.png" }}
   style={{ width: 80, height: 80, borderRadius: 40 }}
-/>;
+  resizeMode="cover"
+/>
 ```
 
----
+Asset lokal: `source={require("../assets/icon.png")}`. Perhatikan ratio agar gambar tidak gepeng.
 
-### 4. TextInput
+#### 4. TextInput – Input Pengguna
 
-`TextInput` digunakan untuk menerima input teks dari pengguna.
-
-```jsx
+```tsx
+import { useState } from "react";
 import { TextInput } from "react-native";
 
+const [name, setName] = useState("");
+
 <TextInput
+  value={name}
+  onChangeText={setName}
   placeholder="Enter your name"
-  style={{ borderWidth: 1, borderColor: "#ccc", padding: 8, margin: 10 }}
-/>;
+  style={{ borderWidth: 1, borderColor: "#ccc", padding: 12, borderRadius: 8 }}
+/>
 ```
 
----
+Props penting: `keyboardType`, `secureTextEntry`, `autoCapitalize`, `onSubmitEditing`.
 
-### 5. Button
+#### 5. Button – Action Sederhana
 
-`Button` adalah tombol sederhana dengan event `onPress`.
-
-```jsx
+```tsx
 import { Button } from "react-native";
 
-<Button title="Click Me" onPress={() => alert("Button pressed!")} />;
+<Button title="Simpan" onPress={() => alert("Button pressed!")} />
 ```
 
----
+Untuk tampilan custom gunakan `Pressable` atau `TouchableOpacity` agar bisa di-styling bebas.
 
-### 6. ScrollView
+#### 6. ScrollView – Konten Panjang
 
-`ScrollView` digunakan untuk membuat konten bisa digulir.  
-Cocok jika konten lebih panjang dari layar.
-
-```jsx
+```tsx
 import { ScrollView, Text } from "react-native";
 
-<ScrollView>
-  {Array.from({ length: 10 }, (_, i) => (
+<ScrollView contentContainerStyle={{ padding: 16 }}>
+  {Array.from({ length: 12 }, (_, i) => (
     <Text key={i}>Item {i + 1}</Text>
   ))}
-</ScrollView>;
+</ScrollView>
 ```
+
+Gunakan ketika konten lebih tinggi dari layar. Untuk list panjang gunakan `FlatList` (akan dibahas pertemuan selanjutnya).
 
 ---
 
-## 📌 Studi Kasus: Profile Card
+### 🧩 Studi Kasus: Profile Card
 
-Sekarang mari kita gabungkan semua komponen di atas menjadi sebuah tampilan **Profile Card sederhana**.
-
-```jsx
+```tsx
+import { useState } from "react";
 import {
   View,
   Text,
@@ -112,11 +114,22 @@ import {
   Button,
   ScrollView,
   StyleSheet,
+  Alert,
 } from "react-native";
 
 export default function App() {
+  const [status, setStatus] = useState("");
+
+  const handleSave = () => {
+    if (!status) {
+      Alert.alert("Oops", "Status tidak boleh kosong");
+      return;
+    }
+    Alert.alert("Status", `Status tersimpan: ${status}`);
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>My Profile Card</Text>
 
       <View style={styles.card}>
@@ -126,54 +139,69 @@ export default function App() {
         />
         <Text style={styles.name}>John Doe</Text>
         <Text style={styles.role}>Mobile Developer</Text>
+        <Text style={styles.description}>
+          Passionate about crafting delightful mobile experiences using React
+          Native and TypeScript.
+        </Text>
 
-        <TextInput placeholder="Update status..." style={styles.input} />
+        <TextInput
+          value={status}
+          onChangeText={setStatus}
+          placeholder="Update status..."
+          style={styles.input}
+        />
 
-        <Button title="Save Status" onPress={() => alert("Status updated!")} />
+        <Button title="Save Status" onPress={handleSave} />
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  header: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  container: { flexGrow: 1, padding: 24, backgroundColor: "#fff" },
+  header: { fontSize: 24, fontWeight: "bold", marginBottom: 24 },
   card: {
     alignItems: "center",
     backgroundColor: "#f9f9f9",
-    padding: 20,
-    borderRadius: 10,
+    padding: 24,
+    borderRadius: 16,
+    gap: 12,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
   },
-  avatar: { width: 100, height: 100, borderRadius: 50, marginBottom: 10 },
+  avatar: { width: 100, height: 100, borderRadius: 50 },
   name: { fontSize: 20, fontWeight: "bold" },
-  role: { fontSize: 16, color: "#555", marginBottom: 10 },
+  role: { fontSize: 16, color: "#555" },
+  description: { textAlign: "center", color: "#666" },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     width: "100%",
-    padding: 8,
-    marginVertical: 10,
-    borderRadius: 5,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: "#fff",
   },
 });
 ```
 
-➡️ Dengan kode ini, kita sudah membuat **Profile Card** yang berisi gambar, teks, input, dan tombol.
+> Coba ubah ukuran font, warna, dan `borderRadius` untuk melihat efeknya langsung melalui hot reload.
 
 ---
 
-## 🎯 Latihan
+### 🧪 Latihan Terarah
 
-1. Buat tampilan **Profile Card** seperti contoh di atas, lalu modifikasi:
+1. Duplikasi komponen profile card dan tampilkan dalam `ScrollView` untuk mensimulasikan daftar anggota tim.  
+2. Ganti komponen `Button` dengan `TouchableOpacity` custom yang memiliki variasi warna (primary, secondary).  
+3. Tambahkan validasi pada `TextInput` agar minimal 10 karakter.  
+4. Tambahkan properti `keyboardShouldPersistTaps="handled"` pada `ScrollView` dan jelaskan kegunaannya.  
+5. (Opsional) Gunakan `KeyboardAvoidingView` agar form tidak tertutup keyboard pada perangkat iOS/Android.
 
-   - Ganti nama dan role sesuai identitasmu.
-   - Tambahkan teks deskripsi singkat di bawah role.
-   - Ubah warna tombol dan gaya teks sesuai kreativitasmu.
+---
 
-2. Tambahkan **ScrollView** jika ingin menampilkan beberapa card sekaligus.
+### 📎 Referensi Cepat
 
-3. (Opsional) Coba tambahkan gambar background untuk membuat tampilan lebih menarik.
+- Komponen Dasar: https://reactnative.dev/docs/components-and-apis  
+- StyleSheet & Flexbox: https://reactnative.dev/docs/flexbox  
+- Handling Input: https://reactnative.dev/docs/textinput

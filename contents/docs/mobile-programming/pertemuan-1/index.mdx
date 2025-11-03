@@ -6,23 +6,40 @@ description: Memahami dasar-dasar TypeScript untuk menulis kode yang lebih aman,
 ## 📌 Pertemuan 1: Pengantar TypeScript
 
 TypeScript adalah **superset dari JavaScript** yang dikembangkan oleh **Microsoft**.  
-Artinya, semua kode JavaScript valid juga merupakan kode TypeScript, tetapi TypeScript menambahkan fitur tambahan seperti **type system** dan **fitur OOP modern**.
-
-Dengan TypeScript, developer dapat menulis kode yang lebih aman, lebih mudah dipahami, dan lebih terstruktur.
+Semua kode JavaScript valid merupakan kode TypeScript, namun TypeScript menambahkan fitur seperti **static type checking**, **interface**, dan **fitur OOP modern** sehingga kode lebih terstruktur dan mudah dirawat.
 
 ---
 
-### 🔑 Kenapa Belajar TypeScript?
+### 🎯 Tujuan Pembelajaran
 
-- **Type Checking** → membantu mendeteksi error lebih awal sebelum dijalankan.  
-- **Produktivitas meningkat** berkat fitur autocomplete dan IntelliSense di VS Code.  
-- **Lebih terstruktur** saat mengembangkan aplikasi skala besar.  
-- Mendukung fitur modern seperti *interface*, *enum*, *generic*, dan *decorator*.  
-- Bisa digunakan di **frontend (React, Vue, Angular)** maupun **backend (Node.js, Deno, Bun)**.  
+- Mengenali nilai tambah TypeScript dibanding JavaScript murni.  
+- Menulis type annotation sederhana untuk variabel, fungsi, dan objek.  
+- Mengompilasi proyek TypeScript menjadi JavaScript menggunakan `tsc`.  
+- Menjalankan latihan kecil untuk membiasakan penulisan tipe data dasar.
 
 ---
 
-### ✍️ Contoh Dasar TypeScript
+### 🧰 Persiapan Lingkungan
+
+1. Pastikan Node.js sudah terpasang (`node -v`).  
+2. Instal TypeScript secara global agar mudah menjalankan `tsc`:
+
+   ```bash
+   npm install -g typescript
+   ```
+
+3. Buat folder latihan, misalnya `typescript-intro`, lalu inisialisasi modul npm bila diperlukan:
+
+   ```bash
+   mkdir typescript-intro && cd typescript-intro
+   npm init -y
+   ```
+
+---
+
+### 🧠 Konsep Utama
+
+#### 1. Type Annotation & Type Inference
 
 ```ts
 let name: string = "John";
@@ -36,50 +53,75 @@ function hello(user: string): string {
 console.log(hello(name));
 ```
 
-➡️ Setiap variabel dan parameter diberi **tipe data**.  
-Jika kita coba memberikan nilai yang salah (misalnya `age = "dua puluh satu"`), TypeScript akan memberi error **sebelum kode dijalankan**.
+➡️ Ketika tipe tidak disebutkan, TypeScript berusaha **menginfersikan**. Namun pada latihan awal, biasakan menuliskan tipe secara eksplisit agar lebih mudah dibaca.
+
+#### 2. Struktur Data Dasar
+
+| Tipe          | Contoh                                                      |
+| ------------- | ----------------------------------------------------------- |
+| `string`      | `"Hello World"`                                             |
+| `number`      | `123`, `3.14`                                               |
+| `boolean`     | `true`, `false`                                             |
+| `array`       | `let numbers: number[] = [1, 2, 3];`                        |
+| `tuple`       | `let point: [number, number] = [0, 1];`                     |
+| `object`      | `let user: { name: string; age: number } = { ... }`         |
+| `any`         | Hindari kecuali benar-benar butuh fleksibilitas penuh.      |
+
+#### 3. Function & Optional Parameter
+
+```ts
+function calculateSquareArea(side: number, unit?: string): string {
+  const area = side * side;
+  return unit ? `${area} ${unit}²` : area.toString();
+}
+
+calculateSquareArea(4); // "16"
+calculateSquareArea(4, "cm"); // "16 cm²"
+```
+
+Parameter dengan `?` bersifat opsional. Saat menggunakan type annotation, TypeScript langsung memberi tahu bila argumen yang dikirim tidak sesuai.
 
 ---
 
-### 📚 Tipe Data Dasar di TypeScript
+### 🛠️ Workflow Kompilasi
 
-1. **String** → `"Hello World"`  
-2. **Number** → `123` atau `3.14`  
-3. **Boolean** → `true` atau `false`  
-4. **Array** → `let numbers: number[] = [1, 2, 3]`  
-5. **Object** → `let user: { name: string; age: number } = { name: "Alice", age: 20 }`  
-6. **Any** → tipe fleksibel (tidak disarankan)  
+1. Buat file `hello.ts`:
 
----
-
-### 🛠️ Kompilasi TypeScript ke JavaScript
-
-1. Install TypeScript secara global:
-   ```bash
-   npm install -g typescript
-   ```
-
-2. Buat file `hello.ts`:
    ```ts
    let message: string = "Hello TypeScript!";
    console.log(message);
    ```
 
-3. Compile ke JavaScript:
+2. Kompilasi ke JavaScript (akan menghasilkan `hello.js`):
    ```bash
    tsc hello.ts
    ```
 
-4. Jalankan:
+3. Jalankan file JavaScript yang dihasilkan:
    ```bash
    node hello.js
    ```
 
+4. Untuk proyek yang lebih besar, buat konfigurasi default dengan:
+   ```bash
+   tsc --init
+   ```
+   Perintah tersebut membuat `tsconfig.json` sehingga kita bisa menjalankan `tsc --watch` untuk kompilasi otomatis.
+
 ---
 
-### 🎯 Latihan
+### 🧪 Latihan Terarah
 
-1. Buat file `exercise1.ts`.  
-2. Deklarasikan variabel dengan tipe `string`, `number`, dan `boolean`.  
-3. Buat fungsi `calculateSquareArea(side: number): number`.  
-4. Compile dan jalankan hasilnya.  
+1. Buat file `exercise1.ts` yang berisi variabel dengan tipe `string`, `number`, dan `boolean`, lalu tampilkan di console.  
+2. Tulis fungsi `calculateSquareArea(side: number): number` dan `calculateRectangleArea(width: number, height: number): number`.  
+3. Buat objek `student` dengan properti `name`, `age`, dan `hobbies`. Pastikan semua diberi tipe.  
+4. Aktifkan `tsc --watch` dan perhatikan bagaimana TypeScript mendeteksi kesalahan ketika tipe yang diberikan tidak sesuai.  
+5. (Opsional) Tambahkan tuple `let coordinates: [number, number]` lalu buat fungsi yang mengembalikan string `"x: <value>, y: <value>"`.
+
+---
+
+### 📎 Referensi Cepat
+
+- Dokumentasi resmi: [https://www.typescriptlang.org/docs/](https://www.typescriptlang.org/docs/)  
+- Playground interaktif: [https://www.typescriptlang.org/play](https://www.typescriptlang.org/play)  
+- Cheatsheet TypeScript + React: [https://www.typescriptlang.org/docs/handbook/react.html](https://www.typescriptlang.org/docs/handbook/react.html)

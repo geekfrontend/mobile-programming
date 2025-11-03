@@ -5,29 +5,30 @@ description: Memahami tipe data lanjutan seperti Array, Object, Interface, dan G
 
 ## 📌 Pertemuan 2: TypeScript Lanjutan
 
-Setelah memahami dasar-dasar TypeScript, sekarang kita masuk ke fitur yang lebih lanjut.  
-Fitur-fitur ini membuat kode lebih **terstruktur**, **mudah dikelola**, dan **fleksibel**.
+Setelah memahami dasar TypeScript, kita melangkah ke fitur yang membantu menjaga kode tetap terstruktur, fleksibel, dan siap skala besar.
 
 ---
 
-### 🔹 Array & Object
+### 🎯 Tujuan Pembelajaran
 
-```ts
-let numbers: number[] = [1, 2, 3, 4, 5];
-
-let student: { name: string; age: number } = {
-  name: "Michael",
-  age: 20,
-};
-```
-
-Array digunakan untuk menyimpan banyak nilai, sedangkan Object menyimpan pasangan `key-value`.
+- Menggunakan `interface`, `type`, dan `enum` secara efektif.  
+- Mengelola struktur data kompleks (array, tuple, nested object).  
+- Memanfaatkan generic untuk membuat fungsi/komponen reusable.  
+- Memahami teknik narrowing dan utility types untuk menangani data dinamis.
 
 ---
 
-### 🔹 Interface
+### ♻️ Reviu Singkat
 
-`interface` digunakan untuk mendefinisikan struktur data agar lebih konsisten.  
+- Array: `let numbers: number[] = [1, 2, 3];`  
+- Object literal: `let student: { name: string; age: number } = { ... };`  
+- Function annotation: `function greet(name: string): string`.
+
+---
+
+### 🧠 Materi Utama
+
+#### 1. Interface & Type Alias
 
 ```ts
 interface User {
@@ -41,71 +42,149 @@ const user1: User = {
   age: 22,
   isActive: true,
 };
+
+interface Admin extends User {
+  permissions: string[];
+}
+
+type Coordinates = [number, number];
+type UserRole = "ADMIN" | "EDITOR" | "VIEWER";
 ```
 
----
+Gunakan `interface` ketika butuh ekspansi (extend/implement). `type` fleksibel untuk union, intersection, dan tuple.
 
-### 🔹 Type Alias vs Interface
-
-Selain `interface`, kita juga bisa menggunakan `type`:  
+#### 2. Object Composition & Nested Types
 
 ```ts
 type Product = {
+  id: string;
   name: string;
   price: number;
   stock: number;
+  metadata?: {
+    tags: string[];
+    lastUpdated: Date;
+  };
 };
 
-const book: Product = {
-  name: "Learning React Native",
-  price: 75000,
-  stock: 10,
-};
+const catalog: Product[] = [
+  {
+    id: "p-1",
+    name: "Learning React Native",
+    price: 75000,
+    stock: 10,
+    metadata: {
+      tags: ["book", "mobile"],
+      lastUpdated: new Date(),
+    },
+  },
+];
+
+function printProduct(product: Product): void {
+  console.log(`${product.name} - Rp${product.price}`);
+  if (product.metadata?.tags) {
+    console.log(`Tags: ${product.metadata.tags.join(", ")}`);
+  }
+}
 ```
 
-**Perbedaan utama:**  
-- `interface` bisa di-*extend* (pewarisan).  
-- `type` lebih fleksibel (bisa union/intersection).  
-
----
-
-### 🔹 Generic
-
-Generic membuat fungsi/kelas lebih fleksibel tanpa kehilangan keamanan tipe.  
+#### 3. Generic Function & Generic Type
 
 ```ts
 function wrap<T>(value: T): T[] {
   return [value];
 }
 
-console.log(wrap<string>("Hello"));
-console.log(wrap<number>(123));
+const stringResult = wrap<string>("Hello");
+const numberResult = wrap(123); // infer: number
+
+type ApiResponse<T> = {
+  data: T;
+  status: number;
+  error?: string;
+};
+
+const userResponse: ApiResponse<User> = {
+  data: user1,
+  status: 200,
+};
 ```
 
-➡️ `T` adalah placeholder untuk tipe data yang akan ditentukan saat fungsi dipanggil.
+Generic membantu membuat utilitas reusable tanpa kehilangan keamanan tipe.
 
----
-
-### 🔹 Enum
-
-`enum` digunakan untuk mendefinisikan kumpulan nilai yang tetap.  
+#### 4. Union, Intersection, dan Enum
 
 ```ts
-enum Role {
-  ADMIN,
-  USER,
-  GUEST,
+enum Category {
+  BOOK = "BOOK",
+  ELECTRONICS = "ELECTRONICS",
+  FASHION = "FASHION",
 }
 
-let role: Role = Role.ADMIN;
-console.log(role); // 0
+type BaseProduct = { id: string; name: string; price: number };
+type Stockable = { stock: number };
+type Discountable = { discount?: number };
+
+type StoreProduct = BaseProduct & Stockable & {
+  category: Category;
+};
+
+function calculateFinalPrice(
+  product: StoreProduct & Discountable
+): number {
+  const discountMultiplier = 1 - (product.discount ?? 0);
+  return product.price * discountMultiplier;
+}
 ```
+
+Enums membantu standardisasi nilai tetap, sedangkan union/intersection memodelkan tipe kompleks.
+
+#### 5. Type Narrowing & Type Assertion
+
+```ts
+type Result = string | number;
+
+function formatResult(result: Result): string {
+  if (typeof result === "number") {
+    return result.toFixed(2);
+  }
+  return result.toUpperCase();
+}
+
+function getElement(id: string) {
+  const element = document.getElementById(id);
+  return element as HTMLInputElement | null;
+}
+```
+
+Gunakan **narrowing** untuk memastikan tipe spesifik sebelum mengakses properti, dan gunakan **assertion** dengan hati-hati ketika yakin tipe tertentu.
+
+#### 6. Utility Types Populer
+
+```ts
+type ProductPreview = Pick<Product, "id" | "name" | "price">;
+type ProductPayload = Omit<Product, "metadata" | "stock">;
+type ReadonlyProduct = Readonly<Product>;
+type ProductUpdate = Partial<Product>;
+```
+
+Utility types membantu memodifikasi tipe yang sudah ada tanpa menulis ulang.
 
 ---
 
-### 🎯 Latihan
+### 🧪 Latihan Terarah
 
-1. Buat `interface Product` dengan field: `name`, `price`, `stock`.  
-2. Buat array berisi beberapa produk.  
-3. Buat fungsi `printProducts(products: Product[]): void` yang menampilkan daftar produk.  
-4. Tambahkan `enum Category` (misalnya: `BOOK`, `ELECTRONICS`, `FASHION`) untuk mengategorikan setiap produk.  
+1. Buat `interface Product` dengan field `id`, `name`, `price`, `stock`, dan `category`.  
+2. Implementasikan fungsi `printProducts(products: Product[]): void` yang menampilkan daftar produk dengan format rapi.  
+3. Buat `type CreateProductPayload = Omit<Product, "id" | "stock"> & { stock?: number }` dan buat fungsi `createProduct(payload: CreateProductPayload): Product`.  
+4. Tambahkan `enum Category` (`BOOK`, `ELECTRONICS`, `FASHION`) dan gunakan pada data produk.  
+5. Buat fungsi `filter<T>(items: T[], predicate: (item: T) => boolean): T[]` untuk melatih generic.  
+6. (Opsional) Implementasikan `type ApiState<T> = { status: "idle" | "loading" | "success" | "error"; data?: T; error?: string };` lalu buat fungsi `createSuccessState<T>(data: T): ApiState<T>`.
+
+---
+
+### 📎 Referensi Cepat
+
+- Handbook TypeScript Advanced Types: https://www.typescriptlang.org/docs/handbook/2/types-from-types.html  
+- Utility Types: https://www.typescriptlang.org/docs/handbook/utility-types.html  
+- TypeScript Deep Dive (gratis): https://basarat.gitbook.io/typescript/

@@ -1,1 +1,428 @@
-## Coming Soon
+---
+title: Pertemuan 6 - Navigasi Menggunakan Expo Router
+description: Mempelajari sistem navigasi modern di React Native menggunakan Expo Router dengan file-based routing.
+---
+
+## 📌 Pertemuan 6: Navigasi Menggunakan Expo Router
+
+**Expo Router** adalah sistem navigasi modern untuk React Native yang menggunakan **file-based routing**.  
+Mirip dengan Next.js, struktur folder menentukan route aplikasi secara otomatis.
+
+---
+
+### 🚀 Mengapa Expo Router?
+
+**Keuntungan Expo Router:**
+- **File-based routing** → struktur folder = struktur navigasi
+- **Type-safe** → TypeScript support yang excellent
+- **Deep linking** → URL yang SEO-friendly
+- **Nested layouts** → layout yang dapat di-nest
+- **API Routes** → mendukung API endpoints (experimental)
+
+---
+
+### 🔧 Setup Expo Router
+
+#### 1. Instalasi
+
+```bash
+npx create-expo-app@latest MyApp --template tabs
+# atau untuk project existing:
+npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar
+```
+
+#### 2. Update `package.json`
+
+```json
+{
+  "main": "expo-router/entry"
+}
+```
+
+#### 3. Setup `app.json`
+
+```json
+{
+  "expo": {
+    "scheme": "myapp",
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
+```
+
+---
+
+### 📁 Struktur File-Based Routing
+
+```
+app/
+├── _layout.tsx          # Root layout
+├── index.tsx            # Home screen (/)
+├── about.tsx            # About screen (/about)
+├── (tabs)/              # Tab group
+│   ├── _layout.tsx      # Tab layout
+│   ├── home.tsx         # /home
+│   └── profile.tsx      # /profile
+├── user/
+│   ├── [id].tsx         # Dynamic route (/user/123)
+│   └── settings.tsx     # /user/settings
+└── modal.tsx            # Modal screen
+```
+
+---
+
+### 🔹 Root Layout (`app/_layout.tsx`)
+
+```tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ title: 'Home' }} />
+      <Stack.Screen name="about" options={{ title: 'About' }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen 
+        name="modal" 
+        options={{ 
+          presentation: 'modal',
+          title: 'Modal Screen' 
+        }} 
+      />
+    </Stack>
+  );
+}
+```
+
+---
+
+### 🔹 Tab Navigation (`app/(tabs)/_layout.tsx`)
+
+```tsx
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function TabLayout() {
+  return (
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: '#007AFF',
+        headerStyle: {
+          backgroundColor: '#f8f9fa',
+        },
+      }}
+    >
+      <Tabs.Screen
+        name="home"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons 
+              name={focused ? 'home' : 'home-outline'} 
+              color={color} 
+              size={24} 
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons 
+              name={focused ? 'person' : 'person-outline'} 
+              color={color} 
+              size={24} 
+            />
+          ),
+        }}
+      />
+    </Tabs>
+  );
+}
+```
+
+---
+
+### 🔹 Screen Components
+
+#### Home Screen (`app/index.tsx`)
+
+```tsx
+import { View, Text, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+
+export default function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Welcome to Expo Router!</Text>
+      
+      <Link href="/about" style={styles.link}>
+        <Text>Go to About</Text>
+      </Link>
+      
+      <Link href="/user/123" style={styles.link}>
+        <Text>View User Profile</Text>
+      </Link>
+      
+      <Link href="/modal" style={styles.link}>
+        <Text>Open Modal</Text>
+      </Link>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  link: {
+    marginVertical: 10,
+    padding: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+  },
+});
+```
+
+---
+
+### 🔹 Dynamic Routes (`app/user/[id].tsx`)
+
+```tsx
+import { View, Text, StyleSheet } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
+
+export default function UserProfile() {
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>User Profile</Text>
+      <Text style={styles.userId}>User ID: {id}</Text>
+      
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => router.back()}
+      >
+        <Text style={styles.buttonText}>Go Back</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  userId: {
+    fontSize: 18,
+    color: '#666',
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 15,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
+```
+
+---
+
+### 🔹 Programmatic Navigation
+
+```tsx
+import { useRouter } from 'expo-router';
+
+export default function NavigationExample() {
+  const router = useRouter();
+
+  const handleNavigation = () => {
+    // Push ke route baru
+    router.push('/about');
+    
+    // Replace current route
+    router.replace('/home');
+    
+    // Go back
+    router.back();
+    
+    // Navigate dengan parameters
+    router.push({
+      pathname: '/user/[id]',
+      params: { id: '456' }
+    });
+  };
+
+  return (
+    // Component JSX
+  );
+}
+```
+
+---
+
+### 🔹 Passing Data Between Screens
+
+#### Menggunakan Query Parameters
+
+```tsx
+// Screen A - Mengirim data
+import { Link } from 'expo-router';
+
+<Link 
+  href={{
+    pathname: '/details',
+    params: { 
+      title: 'Product Name',
+      price: '99000',
+      category: 'electronics'
+    }
+  }}
+>
+  <Text>View Details</Text>
+</Link>
+
+// Screen B - Menerima data
+import { useLocalSearchParams } from 'expo-router';
+
+export default function DetailsScreen() {
+  const { title, price, category } = useLocalSearchParams();
+  
+  return (
+    <View>
+      <Text>Title: {title}</Text>
+      <Text>Price: Rp {price}</Text>
+      <Text>Category: {category}</Text>
+    </View>
+  );
+}
+```
+
+---
+
+### 🔹 Nested Layouts
+
+```tsx
+// app/shop/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function ShopLayout() {
+  return (
+    <Stack
+      screenOptions={{
+        headerStyle: { backgroundColor: '#e3f2fd' },
+        headerTintColor: '#1976d2',
+      }}
+    >
+      <Stack.Screen name="index" options={{ title: 'Shop' }} />
+      <Stack.Screen name="cart" options={{ title: 'Shopping Cart' }} />
+      <Stack.Screen name="checkout" options={{ title: 'Checkout' }} />
+    </Stack>
+  );
+}
+```
+
+---
+
+### 🔹 Guards & Authentication
+
+```tsx
+// app/_layout.tsx
+import { useEffect } from 'react';
+import { useRouter, useSegments } from 'expo-router';
+import { useAuth } from '../hooks/useAuth';
+
+export default function RootLayout() {
+  const { user, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    const inAuthGroup = segments[0] === '(auth)';
+
+    if (!user && !inAuthGroup) {
+      // Redirect ke login jika belum login
+      router.replace('/login');
+    } else if (user && inAuthGroup) {
+      // Redirect ke home jika sudah login
+      router.replace('/');
+    }
+  }, [user, segments, isLoading]);
+
+  return <Stack />;
+}
+```
+
+---
+
+### 🎯 Studi Kasus: E-Commerce Navigation
+
+```
+app/
+├── _layout.tsx
+├── index.tsx                # Home/Product List
+├── (auth)/
+│   ├── _layout.tsx
+│   ├── login.tsx
+│   └── register.tsx
+├── (tabs)/
+│   ├── _layout.tsx
+│   ├── home.tsx
+│   ├── search.tsx
+│   ├── cart.tsx
+│   └── profile.tsx
+├── product/
+│   └── [id].tsx             # Product Detail
+├── category/
+│   └── [slug].tsx           # Category Products
+└── checkout/
+    ├── _layout.tsx
+    ├── shipping.tsx
+    ├── payment.tsx
+    └── confirmation.tsx
+```
+
+---
+
+### 🎯 Latihan
+
+1. **Setup Basic Navigation** → Buat aplikasi dengan 3 screen (Home, About, Contact)
+2. **Tab Navigation** → Implementasi bottom tab dengan 4 tab
+3. **Dynamic Routes** → Buat halaman detail produk dengan parameter ID
+4. **Nested Navigation** → Buat flow checkout dengan multiple steps
+5. **Authentication Flow** → Implementasi login/logout dengan route guards
+
+**Tips:**
+- Gunakan TypeScript untuk type-safe navigation
+- Manfaatkan `useLocalSearchParams()` untuk mengakses parameters
+- Implementasi deep linking untuk better UX
+- Gunakan layout untuk konsistensi UI across screens

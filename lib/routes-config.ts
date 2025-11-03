@@ -30,51 +30,51 @@ export const ROUTES: EachRoute[] = [
         href: "/pertemuan-4",
       },
       {
-        title: "Pertemuan 5: Coming Soon",
+        title: "Pertemuan 5: Styling dengan StyleSheet & Tailwind",
         href: "/pertemuan-5",
       },
       {
-        title: "Pertemuan 6: Coming Soon",
+        title: "Pertemuan 6: Navigasi Menggunakan Expo Router",
         href: "/pertemuan-6",
       },
       {
-        title: "Pertemuan 7: Coming Soon",
+        title: "Pertemuan 7: State Management dengan Hooks",
         href: "/pertemuan-7",
       },
       {
-        title: "Pertemuan 8: Coming Soon",
+        title: "Pertemuan 8: Integrasi API dengan Fetch & Axios",
         href: "/pertemuan-8",
       },
       {
-        title: "Pertemuan 9: Coming Soon",
+        title: "Pertemuan 9: Menyimpan Data Lokal (AsyncStorage)",
         href: "/pertemuan-9",
       },
       {
-        title: "Pertemuan 10: Coming Soon",
+        title: "Pertemuan 10: Akses Kamera & Media Library",
         href: "/pertemuan-10",
       },
       {
-        title: "Pertemuan 11: Coming Soon",
+        title: "Pertemuan 11: Gesture, Animasi, dan Reanimated",
         href: "/pertemuan-11",
       },
       {
-        title: "Pertemuan 12: Coming Soon",
+        title: "Pertemuan 12: Deployment & Build Aplikasi Expo",
         href: "/pertemuan-12",
       },
       {
-        title: "Pertemuan 13: Coming Soon",
+        title: "Pertemuan 13: Autentikasi & Manajemen User",
         href: "/pertemuan-13",
       },
       {
-        title: "Pertemuan 14: Coming Soon",
+        title: "Pertemuan 14: Realtime Database & Push Notification",
         href: "/pertemuan-14",
       },
       {
-        title: "Pertemuan 15: Coming Soon",
+        title: "Pertemuan 15: Studi Kasus — Aplikasi Presensi",
         href: "/pertemuan-15",
       },
       {
-        title: "Pertemuan 16: Coming Soon",
+        title: "Pertemuan 16: Ujian Akhir / Final Project Review",
         href: "/pertemuan-16",
       },
     ],

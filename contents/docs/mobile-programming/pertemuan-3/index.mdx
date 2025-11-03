@@ -5,59 +5,143 @@ description: Langkah awal membuat aplikasi React Native menggunakan Expo.
 
 ## 📌 Pertemuan 3: Membuat Project dengan Expo
 
-Setelah memahami dasar TypeScript, kita akan mulai membuat project **React Native** menggunakan **Expo**.  
-Expo adalah framework yang mempermudah pembuatan aplikasi mobile dengan React Native.  
-Dengan Expo, kita bisa langsung membuat dan menjalankan aplikasi tanpa perlu konfigurasi rumit seperti Android Studio atau Xcode di awal.
+Di pertemuan ini kita mulai membangun aplikasi React Native sungguhan menggunakan **Expo**. Expo menyediakan toolchain lengkap sehingga kita bisa fokus pada logika aplikasi tanpa repot konfigurasi native di awal.
 
 ---
 
-### 🔹 Membuat Project Baru dengan Expo
+### 🎯 Tujuan Pembelajaran
 
-Gunakan perintah berikut untuk membuat project baru:
+- Membuat proyek Expo baru dengan template TypeScript.  
+- Memahami struktur folder standar yang dihasilkan oleh `create-expo-app`.  
+- Menjalankan proyek di perangkat/emulator menggunakan Expo CLI.  
+- Melakukan penyesuaian awal pada file `App.tsx` dan asset dasar.
+
+---
+
+### 🧰 Persiapan Awal
+
+1. Pastikan Node.js ≥ 18 dan npm ≥ 9 terinstal.  
+2. Instal aplikasi **Expo Go** di perangkat Android/iOS untuk uji cepat.  
+3. Masuk ke folder kerja yang akan menampung proyek.
+
+---
+
+### 🚀 Membuat Project Baru
+
+Gunakan perintah berikut untuk membuat proyek baru dengan template TypeScript:
 
 ```bash
-npx create-expo-app MyApp
+npx create-expo-app@latest expo-app --template
 ```
 
-Setelah selesai, masuk ke folder project:
+Pada prompt pilih `blank (TypeScript)` agar langsung mendapatkan dukungan TypeScript.
+
+Setelah proses selesai:
 
 ```bash
-cd MyApp
+cd expo-app
+npm install # memastikan dependency awal terpasang
 ```
 
-Lalu jalankan aplikasi:
+Untuk menjalankan proyek:
 
 ```bash
-npm start
+npm run start
 ```
 
-atau:
+atau langsung via Expo CLI:
 
 ```bash
 npx expo start
 ```
 
-Expo akan menampilkan **QR Code** di terminal/browser yang bisa dipindai menggunakan aplikasi **Expo Go** di Android/iOS.
+Expo CLI akan membuka DevTools di browser dan menampilkan QR code untuk di-scan menggunakan Expo Go atau menjalankan emulator.
 
 ---
 
-### 🔹 Struktur Project Expo
+### 🗂️ Struktur Folder Expo (Template TypeScript)
 
-- **App.ts** → file utama aplikasi.  
-- **assets/** → folder untuk gambar, ikon, dan font.  
-- **package.json** → berisi daftar dependency dan script.  
+```text
+expo-app/
+├── app/
+│   ├── (tabs)/
+│   │   ├── _layout.tsx
+│   │   ├── explore.tsx
+│   │   └── index.tsx
+│   ├── _layout.tsx
+│   └── modal.tsx
+│
+├── assets/
+│   └── images/
+│       ├── android-icon-background.png
+│       ├── android-icon-foreground.png
+│       ├── android-icon-monochrome.png
+│       ├── favicon.png
+│       ├── icon.png
+│       ├── partial-react-logo.png
+│       ├── react-logo.png
+│       ├── react-logo@2x.png
+│       ├── react-logo@3x.png
+│       └── splash-icon.png
+│
+├── components/
+│   └── ui/
+│       ├── collapsible.tsx
+│       ├── external-link.tsx
+│       ├── haptic-tab.tsx
+│       ├── hello-wave.tsx
+│       ├── icon-symbol.tsx
+│       ├── icon-symbol.ios.tsx
+│       ├── parallax-scroll-view.tsx
+│       ├── themed-text.tsx
+│       └── themed-view.tsx
+│
+├── constants/
+│   └── theme.ts
+│
+├── hooks/
+│   ├── use-color-scheme.ts
+│   ├── use-color-scheme.web.ts
+│   └── use-theme-color.ts
+│
+├── scripts/
+│   └── reset-project.js
+│
+├── .gitignore
+├── .npmignore
+├── app.json
+├── eslint.config.js
+├── package.json
+├── README.md
+└── tsconfig.json
+```
+
+> Catatan: Struktur di atas berasal dari template Expo Router (tabs). Jika memilih template `blank` klasik, folder `app/` mungkin tidak ada dan alur aplikasi dimulai dari `App.tsx`.
+
+Pastikan untuk **tidak meng-commit** folder `.expo/` ke repository karena bersifat lokal.
 
 ---
 
-### 🔹 Contoh Kode Awal
+### ⚙️ Konfigurasi Dasar yang Perlu Diperhatikan
 
-```jsx
+- `app.json` → Atur `name`, `slug`, `orientation`, serta pengaturan ikon/splash.  
+- `tsconfig.json` → Pastikan opsi `strict` aktif untuk pengalaman TypeScript maksimal.  
+- `package.json` → Script penting: `start`, `android`, `ios`, `web`.  
+- `App.tsx` → Titik awal komponen root aplikasi.
+
+---
+
+### 🧑‍💻 Contoh Kode Awal
+
+```tsx
+import { StatusBar } from "expo-status-bar";
 import { Text, View, StyleSheet } from "react-native";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Hello React Native 👋</Text>
+      <StatusBar style="auto" />
     </View>
   );
 }
@@ -76,16 +160,22 @@ const styles = StyleSheet.create({
 });
 ```
 
-➡️ Dengan kode ini, kita sudah bisa menampilkan teks sederhana di layar emulator atau device.
+> Simpan perubahan, lalu perhatikan bagaimana Expo melakukan hot reload setiap kali file disimpan.
 
 ---
 
-### 🎯 Latihan
+### 🧪 Latihan Terarah
 
-1. Buat project baru dengan perintah:  
-   ```bash
-   npx create-expo-app MyApp
-   ```
-2. Jalankan di emulator atau smartphone dengan Expo Go.  
-3. Ubah teks di `App.ts` menjadi nama kamu sendiri.  
-4. Tambahkan **StyleSheet** agar tampilan lebih menarik (misalnya background color berbeda).  
+1. Buat proyek baru dengan nama `MyFirstExpo`.  
+2. Jalankan perintah `npm run start` dan hubungkan ke Expo Go/emulator.  
+3. Ubah teks di `App.tsx` menjadi komponen profile sederhana yang menampilkan nama, jurusan, dan universitas.  
+4. Tambahkan file baru di `assets/` (misalnya foto profil) dan tampilkan menggunakan komponen `Image`.  
+5. (Opsional) Aktifkan **Expo Router** dengan menjalankan `npx expo install expo-router react-native-safe-area-context react-native-screens`, lalu buat halaman tambahan di folder `app/`.
+
+---
+
+### 📎 Referensi Cepat
+
+- Panduan resmi: https://docs.expo.dev/get-started/create-a-new-app/  
+- Expo Router: https://docs.expo.dev/router/introduction/  
+- Troubleshooting koneksi Expo Go: https://docs.expo.dev/more/expo-cli/

@@ -1,1 +1,756 @@
-## Coming Soon
+---
+title: Pertemuan 9 - Menyimpan Data Lokal (AsyncStorage)
+description: Mempelajari cara menyimpan dan mengelola data lokal di aplikasi React Native menggunakan AsyncStorage.
+---
+
+## 📌 Pertemuan 9: Menyimpan Data Lokal (AsyncStorage)
+
+**Penyimpanan lokal** sangat penting untuk aplikasi mobile karena memungkinkan aplikasi tetap berfungsi bahkan ketika offline, menyimpan preferensi pengguna, dan meningkatkan performa dengan mengurangi kebutuhan untuk selalu terhubung ke server.
+
+React Native menyediakan solusi penyimpanan lokal melalui **AsyncStorage**, sebuah sistem penyimpanan key-value yang asynchronous dan tidak terenkripsi.
+
+---
+
+### 🔹 Pengenalan AsyncStorage
+
+AsyncStorage adalah API sederhana untuk menyimpan data secara persisten di perangkat. Beberapa karakteristik penting:
+
+- **Asynchronous**: Semua operasi berjalan secara asynchronous (Promise-based)
+- **Unencrypted**: Data disimpan tanpa enkripsi (jangan simpan data sensitif)
+- **Global**: Menyimpan data dalam satu namespace global
+- **Key-Value**: Data disimpan dalam format pasangan key-value
+
+#### Instalasi AsyncStorage
+
+Sejak React Native v0.59, AsyncStorage telah dipindahkan ke package terpisah:
+
+```bash
+npm install @react-native-async-storage/async-storage
+```
+
+Untuk Expo, AsyncStorage sudah termasuk dalam SDK:
+
+```bash
+npx expo install @react-native-async-storage/async-storage
+```
+
+---
+
+### 🔹 Operasi Dasar AsyncStorage
+
+#### Menyimpan Data (setItem)
+
+```jsx
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Menyimpan string
+const saveString = async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+    console.log('Data berhasil disimpan');
+  } catch (error) {
+    console.error('Error menyimpan data:', error);
+  }
+};
+
+// Menyimpan object (harus dikonversi ke string)
+const saveObject = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem(key, jsonValue);
+    console.log('Object berhasil disimpan');
+  } catch (error) {
+    console.error('Error menyimpan object:', error);
+  }
+};
+
+// Contoh penggunaan
+saveString('username', 'johndoe');
+saveObject('userProfile', { 
+  id: 1, 
+  name: 'John Doe', 
+  email: 'john@example.com' 
+});
+```
+
+#### Mengambil Data (getItem)
+
+```jsx
+// Mengambil string
+const getString = async (key) => {
+  try {
+    const value = await AsyncStorage.getItem(key);
+    if (value !== null) {
+      console.log('Data ditemukan:', value);
+      return value;
+    } else {
+      console.log('Data tidak ditemukan');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error mengambil data:', error);
+    return null;
+  }
+};
+
+// Mengambil object
+const getObject = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(key);
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (error) {
+    console.error('Error mengambil object:', error);
+    return null;
+  }
+};
+
+// Contoh penggunaan
+const username = await getString('username');
+const userProfile = await getObject('userProfile');
+```
+
+#### Menghapus Data (removeItem)
+
+```jsx
+const removeData = async (key) => {
+  try {
+    await AsyncStorage.removeItem(key);
+    console.log('Data berhasil dihapus');
+  } catch (error) {
+    console.error('Error menghapus data:', error);
+  }
+};
+
+// Contoh penggunaan
+removeData('username');
+```
+
+#### Operasi Multi (multiSet, multiGet, multiRemove)
+
+```jsx
+// Menyimpan multiple items
+const saveMultipleItems = async () => {
+  try {
+    const pairs = [
+      ['key1', 'value1'],
+      ['key2', 'value2'],
+      ['key3', 'value3']
+    ];
+    await AsyncStorage.multiSet(pairs);
+    console.log('Semua data berhasil disimpan');
+  } catch (error) {
+    console.error('Error menyimpan multiple items:', error);
+  }
+};
+
+// Mengambil multiple items
+const getMultipleItems = async () => {
+  try {
+    const keys = ['key1', 'key2', 'key3'];
+    const values = await AsyncStorage.multiGet(keys);
+    
+    // values akan berupa array of key-value pairs: [['key1', 'value1'], ['key2', 'value2']]
+    values.forEach(([key, value]) => {
+      console.log(`${key}: ${value}`);
+    });
+    
+    return values;
+  } catch (error) {
+    console.error('Error mengambil multiple items:', error);
+    return [];
+  }
+};
+
+// Menghapus multiple items
+const removeMultipleItems = async () => {
+  try {
+    const keys = ['key1', 'key2', 'key3'];
+    await AsyncStorage.multiRemove(keys);
+    console.log('Semua data berhasil dihapus');
+  } catch (error) {
+    console.error('Error menghapus multiple items:', error);
+  }
+};
+```
+
+#### Mengelola Semua Keys (getAllKeys, clear)
+
+```jsx
+// Mendapatkan semua keys
+const getAllKeys = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    console.log('Semua keys:', keys);
+    return keys;
+  } catch (error) {
+    console.error('Error mendapatkan semua keys:', error);
+    return [];
+  }
+};
+
+// Menghapus semua data
+const clearAll = async () => {
+  try {
+    await AsyncStorage.clear();
+    console.log('Storage berhasil dibersihkan');
+  } catch (error) {
+    console.error('Error membersihkan storage:', error);
+  }
+};
+```
+
+---
+
+### 🔧 Custom Hooks untuk AsyncStorage
+
+Membuat custom hooks untuk mempermudah penggunaan AsyncStorage:
+
+```jsx
+// hooks/useAsyncStorage.ts
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const useAsyncStorage = (key, initialValue = null) => {
+  const [storedValue, setStoredValue] = useState(initialValue);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Mengambil data dari storage saat komponen mount
+  useEffect(() => {
+    const getStoredItem = async () => {
+      try {
+        setLoading(true);
+        const item = await AsyncStorage.getItem(key);
+        const value = item ? JSON.parse(item) : initialValue;
+        setStoredValue(value);
+      } catch (error) {
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getStoredItem();
+  }, [key]);
+
+  // Fungsi untuk update nilai di state dan storage
+  const setValue = async (value) => {
+    try {
+      // Mendukung value sebagai function seperti React useState
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      await AsyncStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  // Fungsi untuk menghapus item
+  const removeValue = async () => {
+    try {
+      await AsyncStorage.removeItem(key);
+      setStoredValue(initialValue);
+    } catch (error) {
+      setError(error);
+    }
+  };
+
+  return { 
+    value: storedValue, 
+    setValue, 
+    removeValue, 
+    loading, 
+    error 
+  };
+};
+
+// Contoh penggunaan
+function ProfileScreen() {
+  const { 
+    value: user, 
+    setValue: setUser, 
+    loading 
+  } = useAsyncStorage('user', null);
+
+  if (loading) return <ActivityIndicator />;
+
+  return (
+    <View>
+      {user ? (
+        <>
+          <Text>Welcome, {user.name}!</Text>
+          <Button 
+            title="Logout" 
+            onPress={() => setUser(null)} 
+          />
+        </>
+      ) : (
+        <LoginForm onLogin={(userData) => setUser(userData)} />
+      )}
+    </View>
+  );
+}
+```
+
+---
+
+### 🔹 Penyimpanan Terstruktur dengan AsyncStorage
+
+Karena AsyncStorage adalah sistem key-value sederhana, kita perlu strategi untuk menyimpan data terstruktur:
+
+#### Namespace Keys
+
+```jsx
+// Menggunakan prefix untuk mengelompokkan keys
+const KEYS = {
+  USER: 'app_user',
+  SETTINGS: 'app_settings',
+  CART: 'app_cart',
+  PRODUCTS: 'app_products',
+  THEME: 'app_theme',
+};
+
+// Contoh penggunaan
+await AsyncStorage.setItem(KEYS.USER, JSON.stringify(userData));
+await AsyncStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
+```
+
+#### Storage Service
+
+```jsx
+// services/storageService.ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const PREFIX = '@MyApp:';
+
+export const storageService = {
+  // User related storage
+  user: {
+    save: async (userData) => {
+      await AsyncStorage.setItem(`${PREFIX}user`, JSON.stringify(userData));
+    },
+    get: async () => {
+      const data = await AsyncStorage.getItem(`${PREFIX}user`);
+      return data ? JSON.parse(data) : null;
+    },
+    remove: async () => {
+      await AsyncStorage.removeItem(`${PREFIX}user`);
+    }
+  },
+  
+  // Settings related storage
+  settings: {
+    save: async (settings) => {
+      await AsyncStorage.setItem(`${PREFIX}settings`, JSON.stringify(settings));
+    },
+    get: async () => {
+      const data = await AsyncStorage.getItem(`${PREFIX}settings`);
+      return data ? JSON.parse(data) : defaultSettings;
+    }
+  },
+  
+  // Theme related storage
+  theme: {
+    save: async (theme) => {
+      await AsyncStorage.setItem(`${PREFIX}theme`, theme);
+    },
+    get: async () => {
+      return await AsyncStorage.getItem(`${PREFIX}theme`) || 'light';
+    }
+  },
+  
+  // Collection storage (for arrays)
+  collection: (name) => ({
+    add: async (item) => {
+      const key = `${PREFIX}${name}`;
+      const existing = await AsyncStorage.getItem(key);
+      const items = existing ? JSON.parse(existing) : [];
+      items.push(item);
+      await AsyncStorage.setItem(key, JSON.stringify(items));
+      return items;
+    },
+    getAll: async () => {
+      const key = `${PREFIX}${name}`;
+      const data = await AsyncStorage.getItem(key);
+      return data ? JSON.parse(data) : [];
+    },
+    update: async (id, updatedItem) => {
+      const key = `${PREFIX}${name}`;
+      const existing = await AsyncStorage.getItem(key);
+      if (!existing) return null;
+      
+      const items = JSON.parse(existing);
+      const index = items.findIndex(item => item.id === id);
+      
+      if (index !== -1) {
+        items[index] = { ...items[index], ...updatedItem };
+        await AsyncStorage.setItem(key, JSON.stringify(items));
+      }
+      
+      return items;
+    },
+    remove: async (id) => {
+      const key = `${PREFIX}${name}`;
+      const existing = await AsyncStorage.getItem(key);
+      if (!existing) return [];
+      
+      const items = JSON.parse(existing);
+      const filtered = items.filter(item => item.id !== id);
+      await AsyncStorage.setItem(key, JSON.stringify(filtered));
+      
+      return filtered;
+    },
+    clear: async () => {
+      await AsyncStorage.removeItem(`${PREFIX}${name}`);
+    }
+  })
+};
+
+// Contoh penggunaan
+// User
+await storageService.user.save({ id: 1, name: 'John' });
+const user = await storageService.user.get();
+
+// Collection - Todo items
+const todos = storageService.collection('todos');
+await todos.add({ id: 1, title: 'Learn AsyncStorage', completed: false });
+await todos.add({ id: 2, title: 'Build Todo App', completed: false });
+const allTodos = await todos.getAll();
+await todos.update(1, { completed: true });
+await todos.remove(2);
+```
+
+---
+
+### 🔹 Praktik Terbaik AsyncStorage
+
+1. **Hindari Menyimpan Data Sensitif**
+   - AsyncStorage tidak terenkripsi
+   - Gunakan `expo-secure-store` atau `react-native-keychain` untuk data sensitif
+
+2. **Gunakan Struktur Data yang Konsisten**
+   - Selalu gunakan JSON.stringify/parse untuk objek
+   - Buat service layer untuk operasi storage
+
+3. **Handle Errors dengan Baik**
+   - Selalu gunakan try/catch untuk operasi AsyncStorage
+   - Berikan fallback values untuk kasus error
+
+4. **Batasi Ukuran Data**
+   - AsyncStorage memiliki batasan ukuran
+   - Hindari menyimpan data besar seperti gambar
+
+5. **Gunakan Prefixes untuk Keys**
+   - Hindari konflik dengan aplikasi lain
+   - Contoh: `@AppName:key`
+
+6. **Pertimbangkan Migrasi Data**
+   - Buat versi untuk format data
+   - Implementasikan migrasi saat update aplikasi
+
+---
+
+### 🎯 Studi Kasus: Todo App dengan AsyncStorage
+
+```jsx
+// components/TodoApp.tsx
+import React, { useState, useEffect } from 'react';
+import { 
+  View, Text, TextInput, TouchableOpacity, 
+  FlatList, StyleSheet, ActivityIndicator 
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const TODOS_STORAGE_KEY = '@TodoApp:todos';
+
+export default function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [newTodo, setNewTodo] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Load todos from AsyncStorage on component mount
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  // Save todos to AsyncStorage whenever todos change
+  useEffect(() => {
+    if (!loading) {
+      saveTodos();
+    }
+  }, [todos]);
+
+  const loadTodos = async () => {
+    try {
+      const storedTodos = await AsyncStorage.getItem(TODOS_STORAGE_KEY);
+      if (storedTodos !== null) {
+        setTodos(JSON.parse(storedTodos));
+      }
+    } catch (error) {
+      console.error('Error loading todos:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveTodos = async () => {
+    try {
+      await AsyncStorage.setItem(TODOS_STORAGE_KEY, JSON.stringify(todos));
+    } catch (error) {
+      console.error('Error saving todos:', error);
+    }
+  };
+
+  const addTodo = () => {
+    if (newTodo.trim() === '') return;
+    
+    const newTodoItem = {
+      id: Date.now().toString(),
+      text: newTodo,
+      completed: false,
+      createdAt: new Date()
+    };
+    
+    setTodos([...todos, newTodoItem]);
+    setNewTodo('');
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo => 
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const deleteTodo = (id) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  const clearAllTodos = async () => {
+    setTodos([]);
+    try {
+      await AsyncStorage.removeItem(TODOS_STORAGE_KEY);
+    } catch (error) {
+      console.error('Error clearing todos:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading todos...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Todo App</Text>
+      
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          value={newTodo}
+          onChangeText={setNewTodo}
+          placeholder="Add a new todo..."
+          onSubmitEditing={addTodo}
+        />
+        <TouchableOpacity style={styles.addButton} onPress={addTodo}>
+          <Text style={styles.addButtonText}>Add</Text>
+        </TouchableOpacity>
+      </View>
+      
+      <FlatList
+        data={todos}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.todoItem}>
+            <TouchableOpacity 
+              style={[styles.checkbox, item.completed && styles.checked]} 
+              onPress={() => toggleTodo(item.id)}
+            />
+            <Text 
+              style={[
+                styles.todoText, 
+                item.completed && styles.completedText
+              ]}
+            >
+              {item.text}
+            </Text>
+            <TouchableOpacity 
+              style={styles.deleteButton}
+              onPress={() => deleteTodo(item.id)}
+            >
+              <Text style={styles.deleteButtonText}>X</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No todos yet. Add one!</Text>
+        }
+      />
+      
+      {todos.length > 0 && (
+        <TouchableOpacity style={styles.clearButton} onPress={clearAllTodos}>
+          <Text style={styles.clearButtonText}>Clear All</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+    backgroundColor: 'white',
+  },
+  addButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
+  addButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  todoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 15,
+    borderRadius: 5,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#007bff',
+    marginRight: 10,
+  },
+  checked: {
+    backgroundColor: '#007bff',
+  },
+  todoText: {
+    flex: 1,
+    fontSize: 16,
+  },
+  completedText: {
+    textDecorationLine: 'line-through',
+    color: '#888',
+  },
+  deleteButton: {
+    padding: 5,
+  },
+  deleteButtonText: {
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#888',
+  },
+  clearButton: {
+    backgroundColor: '#dc3545',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  clearButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
+```
+
+---
+
+### 🔹 Alternatif AsyncStorage
+
+1. **Realm**
+   - Database NoSQL yang lebih powerful
+   - Mendukung relasi dan query kompleks
+   - Performa lebih baik untuk data besar
+
+2. **SQLite**
+   - Database SQL relasional
+   - Mendukung query kompleks
+   - Cocok untuk data terstruktur
+
+3. **MMKV**
+   - Alternatif AsyncStorage yang lebih cepat
+   - Berbasis key-value seperti AsyncStorage
+   - Performa lebih baik
+
+4. **Secure Storage**
+   - `expo-secure-store` atau `react-native-keychain`
+   - Untuk menyimpan data sensitif (token, password)
+   - Menggunakan enkripsi
+
+---
+
+### 🎯 Latihan
+
+1. **Aplikasi Notes**
+   - Buat aplikasi notes sederhana dengan AsyncStorage
+   - Fitur: tambah, edit, hapus, dan filter notes
+
+2. **User Preferences**
+   - Implementasikan sistem penyimpanan preferensi user
+   - Contoh: tema, bahasa, notifikasi settings
+
+3. **Shopping Cart**
+   - Buat shopping cart yang persisten dengan AsyncStorage
+   - Fitur: tambah produk, update quantity, hapus produk
+
+4. **Offline Data Sync**
+   - Implementasikan sistem yang menyimpan data offline
+   - Sinkronisasi dengan server ketika online
+
+5. **Form dengan Auto-save**
+   - Buat form yang menyimpan progress secara otomatis
+   - Restore data form ketika aplikasi dibuka kembali
+
+**Best Practices:**
+- Selalu handle error dengan baik
+- Gunakan struktur data yang konsisten
+- Implementasikan loading state untuk operasi AsyncStorage
+- Hindari menyimpan data sensitif di AsyncStorage
+- Gunakan service layer untuk operasi storage

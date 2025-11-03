@@ -1,1 +1,256 @@
-## Coming Soon
+---
+title: Pertemuan 5 - Styling dengan StyleSheet & Tailwind
+description: Mempelajari cara styling komponen React Native menggunakan StyleSheet dan NativeWind (Tailwind CSS).
+---
+
+## 📌 Pertemuan 5: Styling dengan StyleSheet & Tailwind
+
+Styling adalah bagian penting dalam pengembangan aplikasi mobile untuk membuat tampilan yang menarik dan user-friendly.  
+React Native menyediakan **StyleSheet** sebagai cara utama untuk styling, dan kita juga bisa menggunakan **NativeWind** (Tailwind CSS untuk React Native).
+
+---
+
+### 🎨 StyleSheet - Cara Tradisional
+
+StyleSheet adalah API bawaan React Native untuk membuat style yang teroptimasi.
+
+```jsx
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Hello World</Text>
+      <Text style={styles.subtitle}>Welcome to React Native</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+  },
+});
+```
+
+---
+
+### 🔹 Flexbox di React Native
+
+React Native menggunakan **Flexbox** sebagai sistem layout utama:
+
+```jsx
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column', // 'row' | 'column'
+    justifyContent: 'center', // 'flex-start' | 'center' | 'flex-end' | 'space-between'
+    alignItems: 'center', // 'flex-start' | 'center' | 'flex-end' | 'stretch'
+  },
+  box: {
+    width: 100,
+    height: 100,
+    backgroundColor: 'blue',
+    margin: 10,
+  },
+});
+```
+
+**Properti Flexbox Penting:**
+- `flex: 1` → mengisi ruang yang tersedia
+- `flexDirection` → arah layout (row/column)
+- `justifyContent` → alignment di main axis
+- `alignItems` → alignment di cross axis
+
+---
+
+### 🔹 Dimensi & Positioning
+
+```jsx
+const styles = StyleSheet.create({
+  fixedSize: {
+    width: 200,
+    height: 100,
+  },
+  percentage: {
+    width: '80%',
+    height: '50%',
+  },
+  positioned: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    right: 20,
+  },
+});
+```
+
+---
+
+### 🌟 NativeWind - Tailwind untuk React Native
+
+NativeWind memungkinkan kita menggunakan **Tailwind CSS** di React Native dengan sintaks yang familiar.
+
+#### Instalasi NativeWind
+
+```bash
+npm install nativewind
+npm install --save-dev tailwindcss
+```
+
+Buat file `tailwind.config.ts`:
+
+```js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./App.{js,jsx,ts,tsx}", "./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+Update `babel.config.ts`:
+
+```js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+    plugins: ["nativewind/babel"],
+  };
+};
+```
+
+---
+
+### 🔹 Menggunakan NativeWind
+
+```jsx
+import React from 'react';
+import { View, Text } from 'react-native';
+
+export default function App() {
+  return (
+    <View className="flex-1 justify-center items-center bg-gray-100">
+      <Text className="text-2xl font-bold text-gray-800 mb-4">
+        Hello NativeWind!
+      </Text>
+      <Text className="text-base text-gray-600">
+        Tailwind CSS in React Native
+      </Text>
+    </View>
+  );
+}
+```
+
+**Keuntungan NativeWind:**
+- Sintaks familiar bagi developer web
+- Utility-first approach
+- Konsisten dengan Tailwind CSS
+- IntelliSense support
+
+---
+
+### 🔹 Responsive Design
+
+```jsx
+// Dengan StyleSheet
+const styles = StyleSheet.create({
+  container: {
+    padding: 16,
+    // Responsive berdasarkan dimensi layar
+    paddingHorizontal: Dimensions.get('window').width > 400 ? 32 : 16,
+  },
+});
+
+// Dengan NativeWind
+<View className="p-4 sm:p-8 md:p-12">
+  <Text className="text-lg sm:text-xl md:text-2xl">
+    Responsive Text
+  </Text>
+</View>
+```
+
+---
+
+### 🔹 Dark Mode Support
+
+```jsx
+// Dengan NativeWind
+<View className="bg-white dark:bg-gray-900">
+  <Text className="text-gray-900 dark:text-white">
+    Auto Dark Mode
+  </Text>
+</View>
+```
+
+---
+
+### 🎯 Studi Kasus: Card Component
+
+Mari buat komponen Card yang stylish:
+
+```jsx
+import React from 'react';
+import { View, Text, Image, TouchableOpacity } from 'react-native';
+
+const ProductCard = ({ product }) => {
+  return (
+    <TouchableOpacity className="bg-white rounded-lg shadow-md m-2 overflow-hidden">
+      <Image 
+        source={{ uri: product.image }} 
+        className="w-full h-48"
+        resizeMode="cover"
+      />
+      <View className="p-4">
+        <Text className="text-lg font-bold text-gray-800 mb-2">
+          {product.name}
+        </Text>
+        <Text className="text-gray-600 mb-3">
+          {product.description}
+        </Text>
+        <View className="flex-row justify-between items-center">
+          <Text className="text-xl font-bold text-blue-600">
+            Rp {product.price.toLocaleString()}
+          </Text>
+          <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-md">
+            <Text className="text-white font-semibold">Beli</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
+```
+
+---
+
+### 🎯 Latihan
+
+1. **Buat Layout Grid** → Gunakan Flexbox untuk membuat grid 2 kolom produk
+2. **Implementasi Dark Mode** → Tambahkan toggle dark/light mode
+3. **Responsive Card** → Buat card yang responsive di berbagai ukuran layar
+4. **Custom Button** → Buat komponen button dengan berbagai variant (primary, secondary, danger)
+5. **Form Styling** → Style form input dengan focus state dan validation
+
+**Tips:**
+- Gunakan `StyleSheet.create()` untuk performa yang lebih baik
+- Kombinasikan StyleSheet dan NativeWind sesuai kebutuhan
+- Manfaatkan Flexbox untuk layout yang fleksibel
+- Perhatikan konsistensi design system
