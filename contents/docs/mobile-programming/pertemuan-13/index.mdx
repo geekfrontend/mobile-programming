@@ -1,1 +1,85 @@
-## Coming Soon
+---
+title: Pertemuan 13 - Autentikasi & User
+description: Auth flow, token, protected routes, dan reset password di aplikasi.
+---
+
+# 📌 Pertemuan 13: Autentikasi & Manajemen User
+
+## Tujuan Pembelajaran
+- Mendesain konteks autentikasi dan state user
+- Implementasi login, logout, dan penyimpanan sesi
+- Melindungi halaman dengan protected routes
+- Menangani reset password via email
+- Menangani error autentikasi yang umum
+
+## Konsep Utama
+
+### Auth Provider dan Protected
+```tsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { View, Text, TextInput, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient('SUPABASE_URL', 'SUPABASE_ANON_KEY');
+
+type AuthContextType = { userId: string | null; signIn: (email: string, password: string) => Promise<void>; signOut: () => Promise<void>; };
+const AuthContext = createContext<AuthContextType>({ userId: null, signIn: async () => {}, signOut: async () => {} });
+export function useAuth() { return useContext(AuthContext); }
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem('userId').then(v => setUserId(v));
+  }, []);
+
+  async function signIn(email: string, password: string) {
+    const res = await supabase.auth.signInWithPassword({ email, password });
+    const id = res.data.user?.id ?? null;
+    setUserId(id);
+    if (id) await AsyncStorage.setItem('userId', id);
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+    setUserId(null);
+    await AsyncStorage.removeItem('userId');
+  }
+
+  return <AuthContext.Provider value={{ userId, signIn, signOut }}>{children}</AuthContext.Provider>;
+}
+
+export function Protected({ children }: { children: React.ReactNode }) {
+  const { userId } = useAuth();
+  if (!userId) return <View style={{ padding: 16 }}><Text>Silakan login</Text></View>;
+  return <>{children}</>;
+}
+```
+
+### Reset Password
+```tsx
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient('SUPABASE_URL', 'SUPABASE_ANON_KEY');
+
+export async function resetPassword(email: string) {
+  await supabase.auth.resetPasswordForEmail(email, { redirectTo: 'yourapp://reset' });
+}
+```
+
+### Studi Kasus Kecil: “Protected Dashboard”
+- Bungkus halaman dashboard dengan `Protected`.
+- Redirect ke layar login bila user belum autentik.
+- Tampilkan tombol logout yang menghapus sesi dan kembali ke login.
+
+## Latihan
+- Tambahkan validasi form login (email format).
+- Simpan token/ID user ke storage yang aman.
+- Implementasikan “remember me” dengan auto login.
+- Buat halaman reset password dengan input email.
+- Buat guard untuk mencegah akses halaman sensitif via deep link.
+
+## Referensi Cepat
+- https://supabase.com/docs/guides/auth
+- https://react-native-async-storage.github.io/async-storage/docs/usage
+- https://expo.github.io/router/docs (opsional untuk routing)

@@ -1,1 +1,170 @@
-## Coming Soon
+---
+title: Pertemuan 15 - Studi Kasus — Catatan Harian Mini
+description: Projek mini catatan harian sederhana dengan tambah/edit/hapus, favorit opsional, dan penyimpanan lokal.
+---
+
+## 📌 Pertemuan 15: Studi Kasus — Catatan Harian Mini
+
+### Tujuan Pembelajaran
+- Merancang aplikasi kecil dengan fitur inti yang fokus
+- Mengelola state lokal dan penyimpanan dengan AsyncStorage
+- Menangani validasi input, loading/error, dan empty state
+- Menyusun arsitektur komponen yang ringkas dan mudah dirawat
+- Menyiapkan demo singkat yang stabil dan mudah diikuti
+
+### Studi Kasus: Catatan Harian Mini
+- Fitur minimum: tambah catatan teks (judul + isi), edit, hapus, tandai favorit (opsional), simpan lokal (AsyncStorage), tampilkan daftar + detail singkat.
+- Opsional: pencarian/filter, tema terang/gelap, backup/restore dummy ke mock API.
+- Arsitektur singkat: state lokal/Context, custom hook untuk storage, komponen form input + daftar + detail ringkas.
+
+```tsx
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+type Note = { id: string; title: string; body: string; fav?: boolean; createdAt: number };
+const KEY = 'notes_mini_v1';
+
+function useNotes() {
+  const [notes, setNotes] = useState<Note[]>([]);
+
+  useEffect(() => {
+    AsyncStorage.getItem(KEY).then(v => { if (v) setNotes(JSON.parse(v)); });
+  }, []);
+
+  async function persist(next: Note[]) {
+    setNotes(next);
+    await AsyncStorage.setItem(KEY, JSON.stringify(next));
+  }
+
+  async function addNote(title: string, body: string) {
+    const t = title.trim();
+    const b = body.trim();
+    if (!t || !b) return;
+    const note: Note = { id: String(Date.now()), title: t, body: b, createdAt: Date.now() };
+    await persist([note, ...notes]);
+  }
+
+  async function updateNote(id: string, title: string, body: string) {
+    const next = notes.map(n => (n.id === id ? { ...n, title: title.trim(), body: body.trim() } : n));
+    await persist(next);
+  }
+
+  async function deleteNote(id: string) {
+    const next = notes.filter(n => n.id !== id);
+    await persist(next);
+  }
+
+  async function toggleFav(id: string) {
+    const next = notes.map(n => (n.id === id ? { ...n, fav: !n.fav } : n));
+    await persist(next);
+  }
+
+  async function reset() { await persist([]); }
+
+  return { notes, addNote, updateNote, deleteNote, toggleFav, reset };
+}
+
+export default function NotesMini() {
+  const { notes, addNote, updateNote, deleteNote, toggleFav, reset } = useNotes();
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+
+  const listData = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filtered = q
+      ? notes.filter(n => n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q))
+      : notes;
+    return filtered.sort((a, b) => b.createdAt - a.createdAt);
+  }, [notes, query]);
+
+  async function submit() {
+    if (editingId) {
+      await updateNote(editingId, title, body);
+      setEditingId(null);
+    } else {
+      await addNote(title, body);
+    }
+    setTitle('');
+    setBody('');
+  }
+
+  function startEdit(n: Note) {
+    setEditingId(n.id);
+    setTitle(n.title);
+    setBody(n.body);
+  }
+
+  return (
+    <View style={{ padding: 16 }}>
+      <Text style={{ fontSize: 20, marginBottom: 8 }}>Catatan Harian Mini</Text>
+      <TextInput value={title} onChangeText={setTitle} placeholder="Judul" style={{ borderWidth: 1, padding: 8, marginBottom: 8 }} />
+      <TextInput value={body} onChangeText={setBody} placeholder="Isi catatan" style={{ borderWidth: 1, padding: 8, marginBottom: 8 }} multiline />
+      <Button title={editingId ? 'Simpan Perubahan' : 'Tambah Catatan'} onPress={submit} />
+      <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+        <TextInput value={query} onChangeText={setQuery} placeholder="Cari..." style={{ flex: 1, borderWidth: 1, padding: 8 }} />
+        <Button title="Reset Data" onPress={reset} />
+      </View>
+      <FlatList
+        style={{ marginTop: 12 }}
+        data={listData}
+        keyExtractor={n => n.id}
+        renderItem={({ item }) => (
+          <View style={{ padding: 12, borderWidth: 1, borderRadius: 8, marginBottom: 8 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Text style={{ fontWeight: '600' }}>{item.title} {item.fav ? '⭐' : ''}</Text>
+              <TouchableOpacity onPress={() => toggleFav(item.id)}><Text>Favorit</Text></TouchableOpacity>
+            </View>
+            <Text numberOfLines={2} style={{ marginVertical: 6 }}>{item.body}</Text>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Button title="Edit" onPress={() => startEdit(item)} />
+              <Button title="Hapus" onPress={() => deleteNote(item.id)} />
+            </View>
+          </View>
+        )}
+        ListEmptyComponent={<Text>Belum ada catatan</Text>}
+      />
+    </View>
+  );
+}
+```
+
+### Checklist Implementasi
+- Validasi input sederhana untuk judul dan isi
+- Handling loading/error/empty pada daftar dan aksi penyimpanan
+- Tombol reset data untuk ulang demo dengan cepat
+- Ikon aplikasi dan splash screen dasar
+- Data dummy awal agar tampilan tidak kosong saat demo
+- Penggunaan `FlatList` untuk performa daftar
+- Pencarian/filter opsional dengan input sederhana
+- Tema dasar yang konsisten dan terbaca
+
+### Best Practices
+- Penamaan dan foldering rapi, modul kecil dan terpisah
+- Custom hooks untuk storage agar UI tetap bersih
+- State error dan loading eksplisit di proses async
+- Hindari menyimpan data sensitif di AsyncStorage
+- Debounce input saat pencarian agar hemat render
+- Gunakan memoisasi seperlunya pada daftar besar
+
+### Tips Demo
+- Alur singkat: tambah–lihat–hapus catatan lalu favorit
+- Siapkan data contoh agar UI langsung informatif
+- Tunjukkan empty dan error state secara terkontrol
+- Batasi durasi demo dan gunakan skrip langkah
+- Siapkan build/QR cadangan untuk antisipasi masalah
+
+### Latihan/Persiapan
+- Implement fitur inti tambah/edit/hapus/favorit
+- Tambah handler error/loading berbasis state
+- Buat empty state yang informatif dan ramah
+- Tambah test dasar untuk hook storage
+- Cek performa cepat di perangkat fisik
+
+### Referensi Cepat
+- https://react-native-async-storage.github.io/async-storage/docs/usage
+- https://docs.expo.dev/build/introduction/
+- https://reactnative.dev/docs/optimizing-performance
+- https://docs.expo.dev/versions/latest/

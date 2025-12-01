@@ -1,1 +1,107 @@
-## Coming Soon
+---
+title: Pertemuan 10 - Kamera & Media
+description: Izin, ambil foto/video, simpan ke galeri, dan preview di Expo.
+---
+
+# 📌 Pertemuan 10: Akses Kamera & Media Library
+
+## Tujuan Pembelajaran
+- Memahami alur izin kamera dan media library di Expo
+- Mengambil foto/video dengan `ImagePicker` dan kamera
+- Menyimpan aset ke galeri dan membuat album sederhana
+- Menampilkan preview media dan mengelola state
+- Menangani penolakan izin dengan UX yang aman
+
+## Konsep Utama
+
+### Izin & Setup Media
+```tsx
+import React, { useState } from 'react';
+import { View, Button, Image, SafeAreaView, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+
+export default function App() {
+  const [uri, setUri] = useState<string | null>(null);
+
+  async function ensurePermissions() {
+    await ImagePicker.requestCameraPermissionsAsync();
+    await ImagePicker.requestMediaLibraryPermissionsAsync();
+    await MediaLibrary.requestPermissionsAsync();
+  }
+
+  async function takePhoto() {
+    await ensurePermissions();
+    const r = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8
+    });
+    if (!r.canceled) setUri(r.assets[0].uri);
+  }
+
+  async function pickImage() {
+    await ensurePermissions();
+    const r = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8
+    });
+    if (!r.canceled) setUri(r.assets[0].uri);
+  }
+
+  async function save() {
+    if (uri) await MediaLibrary.saveToLibraryAsync(uri);
+  }
+
+  return (
+    <SafeAreaView style={styles.c}>
+      <View style={styles.row}>
+        <Button title="Ambil Foto" onPress={takePhoto} />
+        <Button title="Pilih dari Galeri" onPress={pickImage} />
+      </View>
+      {uri && <Image source={{ uri }} style={styles.img} />}
+      <Button title="Simpan ke Galeri" onPress={save} disabled={!uri} />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  c: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 16 },
+  row: { flexDirection: 'row', gap: 12 },
+  img: { width: 240, height: 240, borderRadius: 12 }
+});
+```
+
+### Studi Kasus Kecil: “Catatan Visual”
+```tsx
+import React, { useState } from 'react';
+import { View, Button, Image, TextInput } from 'react-native';
+import * as MediaLibrary from 'expo-media-library';
+
+export function CatatanVisual({ uri }: { uri: string }) {
+  const [caption, setCaption] = useState('');
+  async function saveWithAlbum() {
+    const asset = await MediaLibrary.createAssetAsync(uri);
+    await MediaLibrary.createAlbumAsync('Catatan', asset, false);
+  }
+  return (
+    <View>
+      <Image source={{ uri }} style={{ width: 200, height: 200 }} />
+      <TextInput value={caption} onChangeText={setCaption} placeholder="Tulis catatan" />
+      <Button title="Simpan dengan Album" onPress={saveWithAlbum} />
+    </View>
+  );
+}
+```
+
+## Latihan
+- Buat tombol “Ambil Video” dan preview hasilnya.
+- Tambahkan indikator loading saat proses simpan galeri.
+- Buat album khusus “Kelas Mobile” dan simpan semua aset ke sana.
+- Implementasikan kompresi kualitas gambar sebelum simpan.
+- Tampilkan daftar thumbnail dari 10 foto terbaru di galeri.
+
+## Referensi Cepat
+- https://docs.expo.dev/versions/latest/sdk/imagepicker/
+- https://docs.expo.dev/versions/latest/sdk/camera/
+- https://docs.expo.dev/versions/latest/sdk/media-library/
+- https://docs.expo.dev/permissions/

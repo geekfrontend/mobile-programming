@@ -1,1 +1,97 @@
-## Coming Soon
+---
+title: Pertemuan 11 - Gesture & Animasi
+description: Gesture Handler, Reanimated, dan micro-interactions halus di React Native.
+---
+
+# 📌 Pertemuan 11: Gesture, Animasi, dan Reanimated
+
+## Tujuan Pembelajaran
+- Memahami peran Gesture Handler dan Reanimated
+- Menerapkan pan, tap, dan micro-interactions
+- Menggunakan `useSharedValue`, `useAnimatedStyle`, dan `withSpring`
+- Mendesain UX yang responsif terhadap sentuhan
+- Membangun komponen swipe-to-dismiss sederhana
+
+## Konsep Utama
+
+### Pan Gesture + Spring
+```tsx
+import React from 'react';
+import { GestureHandlerRootView, GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+
+export default function App() {
+  const x = useSharedValue(0);
+  const y = useSharedValue(0);
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateX: x.value }, { translateY: y.value }, { scale: withSpring(x.value === 0 && y.value === 0 ? 1 : 1.02) }]
+  }));
+
+  const pan = Gesture.Pan()
+    .onUpdate(e => {
+      x.value = e.translationX;
+      y.value = e.translationY;
+    })
+    .onEnd(() => {
+      x.value = withSpring(0);
+      y.value = withSpring(0);
+    });
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <GestureDetector gesture={pan}>
+        <Animated.View style={[{ width: 180, height: 180, backgroundColor: '#4c8', borderRadius: 16 }, style]} />
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+}
+```
+
+### Studi Kasus Kecil: “Swipe untuk Arsip”
+```tsx
+import React, { useState } from 'react';
+import { Text } from 'react-native';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
+
+export function SwipeRow({ text }: { text: string }) {
+  const [visible, setVisible] = useState(true);
+  const x = useSharedValue(0);
+
+  const style = useAnimatedStyle(() => ({
+    transform: [{ translateX: x.value }]
+  }));
+
+  const pan = Gesture.Pan()
+    .onUpdate(e => {
+      x.value = e.translationX;
+    })
+    .onEnd(() => {
+      if (Math.abs(x.value) > 120) runOnJS(setVisible)(false);
+      x.value = withSpring(0);
+    });
+
+  if (!visible) return null;
+
+  return (
+    <GestureDetector gesture={pan}>
+      <Animated.View style={[{ padding: 16, backgroundColor: '#eee', borderRadius: 12, marginVertical: 8 }, style]}>
+        <Text>{text}</Text>
+      </Animated.View>
+    </GestureDetector>
+  );
+}
+```
+
+## Latihan
+- Tambahkan efek tap yang menskalakan komponen ke 0.95 lalu kembali.
+- Buat list 10 item dengan swipe untuk menghapus.
+- Implementasikan batasan area drag agar kartu tidak keluar layar.
+- Tambahkan haptic feedback saat melewati threshold penghapusan.
+- Buat bottom sheet sederhana dengan gesture untuk tarik-naik/turun.
+
+## Referensi Cepat
+- https://docs.swmansion.com/react-native-gesture-handler/docs/
+- https://docs.swmansion.com/react-native-reanimated/docs/
+- https://shopify.github.io/react-native-skia/ (opsional untuk efek visual)

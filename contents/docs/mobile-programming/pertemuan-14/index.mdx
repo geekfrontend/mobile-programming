@@ -1,1 +1,98 @@
-## Coming Soon
+---
+title: Pertemuan 14 - Realtime & Push
+description: Realtime data (Supabase/Firebase) dan Expo Push Notifications untuk notifikasi.
+---
+
+# 📌 Pertemuan 14: Realtime Database & Push Notification
+
+## Tujuan Pembelajaran
+- Terhubung ke sumber data realtime dan berlangganan event
+- Menangani insert/update live dengan UI reaktif
+- Mendaftarkan perangkat untuk push notifications
+- Mengirim notifikasi lokal dan memahami alur remote
+- Menggabungkan realtime + push untuk skenario praktis
+
+## Konsep Utama
+
+### Supabase Realtime
+```tsx
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient('SUPABASE_URL', 'SUPABASE_ANON_KEY');
+
+export default function LiveFeed() {
+  const [latest, setLatest] = useState<string>('');
+  useEffect(() => {
+    const channel = supabase
+      .channel('public:messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+        setLatest(payload.new.content as string);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+  return (
+    <View>
+      <Text>Terbaru: {latest}</Text>
+    </View>
+  );
+}
+```
+
+### Expo Push Notifications
+```tsx
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button } from 'react-native';
+import * as Notifications from 'expo-notifications';
+
+export function PushDemo() {
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: false, shouldSetBadge: false })
+    });
+  }, []);
+
+  async function register() {
+    const { status } = await Notifications.requestPermissionsAsync();
+    if (status !== 'granted') return;
+    const t = await Notifications.getExpoPushTokenAsync();
+    setToken(t.data);
+  }
+
+  async function sendLocal() {
+    await Notifications.scheduleNotificationAsync({
+      content: { title: 'Halo', body: 'Notifikasi lokal' },
+      trigger: null
+    });
+  }
+
+  return (
+    <View>
+      <Button title="Daftar Push" onPress={register} />
+      <Text>Token: {token ?? '-'}</Text>
+      <Button title="Kirim Notifikasi Lokal" onPress={sendLocal} />
+    </View>
+  );
+}
+```
+
+### Studi Kasus Kecil: “Live Feed + Alert”
+- Dengarkan event insert pada tabel target.
+- Saat data baru masuk, tampilkan highlight di UI.
+- Kirim notifikasi lokal agar user mendapat peringatan langsung.
+
+## Latihan
+- Berlangganan event update dan delete, tampilkan status di UI.
+- Simpan push token ke backend untuk pengiriman remote.
+- Buat filter client-side agar hanya event penting memicu notifikasi.
+- Tambahkan indikator koneksi realtime (online/offline).
+- Buat layar pengaturan untuk mengaktifkan/menonaktifkan notifikasi.
+
+## Referensi Cepat
+- https://supabase.com/docs/guides/realtime
+- https://docs.expo.dev/versions/latest/sdk/notifications/
+- https://docs.expo.dev/push-notifications/overview/

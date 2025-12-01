@@ -1,1 +1,86 @@
-## Coming Soon
+---
+title: Pertemuan 12 - Deployment Expo
+description: EAS build/submit, signing, channel, dan pipeline rilis aplikasi Expo.
+---
+
+# 📌 Pertemuan 12: Deployment & Build Aplikasi Expo
+
+## Tujuan Pembelajaran
+- Memahami EAS Build dan EAS Submit
+- Menyiapkan signing iOS/Android dengan aman
+- Mengelola channel rilis dan OTA updates
+- Mendesain pipeline rilis dev, beta, production
+- Memvalidasi build dan update di perangkat nyata
+
+## Konsep Utama
+
+### Konfigurasi `eas.json`
+```json
+{
+  "cli": { "version": ">= 3.19.0" },
+  "build": {
+    "development": { "channel": "dev", "distribution": "internal" },
+    "preview": { "channel": "beta", "distribution": "internal" },
+    "production": { "channel": "production" }
+  },
+  "submit": {
+    "ios": { "ascAppId": "YOUR_APP_ID" },
+    "android": { "serviceAccountKeyPath": "./service-account.json" }
+  }
+}
+```
+
+### OTA Update dengan `expo-updates`
+```tsx
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button } from 'react-native';
+import * as Updates from 'expo-updates';
+
+export default function ReleaseInfo() {
+  const [channel, setChannel] = useState<string>('');
+  const [available, setAvailable] = useState<boolean>(false);
+
+  useEffect(() => {
+    setChannel(Updates.channel ?? 'unknown');
+  }, []);
+
+  async function checkUpdate() {
+    const result = await Updates.checkForUpdateAsync();
+    setAvailable(result.isAvailable);
+  }
+
+  async function applyUpdate() {
+    const result = await Updates.checkForUpdateAsync();
+    if (result.isAvailable) await Updates.fetchUpdateAsync();
+    await Updates.reloadAsync();
+  }
+
+  return (
+    <View>
+      <Text>Channel: {channel}</Text>
+      <Button title="Cek Update" onPress={checkUpdate} />
+      <Button title="Terapkan Update" onPress={applyUpdate} />
+      <Text>{available ? 'Update tersedia' : 'Tidak ada update'}</Text>
+    </View>
+  );
+}
+```
+
+### Studi Kasus Kecil: “Rilis Beta Aman”
+- Gunakan profil `preview` dengan channel `beta`.
+- Distribusikan build internal ke tim QA.
+- Setelah lulus, tingkatkan ke profil `production` dan submit ke store.
+- Aktifkan OTA untuk hotfix kecil tanpa rebuild.
+
+## Latihan
+- Buat tiga profil build: `development`, `preview`, `production`.
+- Tambahkan metadata app (name, icon, bundle id) di `app.json`.
+- Buat build internal dan uji di perangkat fisik.
+- Konfigurasi kredensial signing yang tersimpan aman.
+- Simulasikan hotfix OTA dan verifikasi di perangkat.
+
+## Referensi Cepat
+- https://docs.expo.dev/build/introduction/
+- https://docs.expo.dev/submit/introduction/
+- https://docs.expo.dev/eas-update/introduction/
+- https://docs.expo.dev/build/credentials/

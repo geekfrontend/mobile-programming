@@ -1,1 +1,73 @@
-## Coming Soon
+---
+title: Pertemuan 16 - Ujian Akhir / Final Project Review
+description: Review final project Habit Tracker dan panduan demo singkat yang terstruktur.
+---
+
+## 📌 Pertemuan 16: Ujian Akhir / Final Project Review
+
+### Tujuan Pembelajaran
+- Menyelesaikan deliverables final project Habit Tracker secara rapi dan terukur
+- Memvalidasi fitur inti dan memastikan stabilitas aplikasi untuk demo
+- Menyiapkan bahan presentasi singkat yang efektif dan mudah diikuti
+- Menerapkan checklist kualitas rilis ringan dan praktik produksi dasar
+- Mengelola risiko saat demo dengan skenario cadangan yang realistis
+
+### Final Project: Habit Tracker
+- Fitur minimum:
+  - Daftar habit yang dapat ditambah/diubah/dihapus sesuai kebutuhan
+  - Tandai selesai per hari dan simpan status harian secara lokal
+  - Progres mingguan/bulanan sederhana dalam bentuk persentase atau ringkasan
+  - Notifikasi pengingat harian agar pengguna konsisten
+  - Penyimpanan data lokal menggunakan mekanisme yang persisten
+- Opsional:
+  - Jadwal per hari (misalnya waktu pengingat khusus tiap habit)
+  - Kategori habit untuk pengelompokan sederhana
+  - Tema terang/gelap dan preferensi tampilan
+  - Sinkronisasi ke mock API (upload token/payload sederhana) untuk simulasi backend
+- Arsitektur singkat (deskriptif):
+  - State global atau Context untuk menyimpan daftar habit, status harian, dan preferensi
+  - Custom hooks untuk storage (persist/restore), notifikasi (jadwal/batalkan), dan kalkulasi progres
+  - Komponen List (daftar habit), Detail (aksi harian), dan Ringkasan Progres (mingguan/bulanan) yang jelas perannya
+
+### Checklist Siap Demo/Deploy
+- Izin notifikasi: proses minta izin, fallback bila ditolak, dan pesan yang ramah
+- Loading, error, dan empty state tampil konsisten di setiap layar penting
+- Data dummy disiapkan agar tampilan tidak kosong saat awal demo
+- Ikon aplikasi dan splash screen dasar sudah diterapkan
+- Build channel terkonfigurasi (development, preview/beta, production) sesuai kebutuhan
+- Environment/config jelas: kunci, ID, dan variabel terkait disimpan aman dan terdokumentasi
+- Offline readiness: data di-cache dan aplikasi tetap berguna tanpa koneksi
+- Aksesibilitas dasar: ukuran teks, kontras warna, label tombol, dan fokus interaksi
+- Ukuran bundle ditinjau, aset besar dikompresi seperlunya
+- Tombol reset data/clear storage untuk mengulang skenario demo dengan cepat
+
+### Best Practices
+- Penamaan dan foldering konsisten, modular, dan mudah ditelusuri
+- Custom hooks untuk storage/API agar UI tetap bersih dan terpisah dari logika
+- Error/loading handling eksplisit dengan pesan yang jelas untuk pengguna
+- Secure storage untuk data sensitif (jika ada), hindari menyimpan rahasia di storage biasa
+- Debounce input untuk pencarian/filter agar hemat render dan responsif
+- Memoisasi seperlunya untuk daftar besar agar performa stabil
+- Logging minimal dengan flag debug, jangan membocorkan data sensitif
+
+### Tips Demo
+- Susun alur cerita ringkas: tambah habit, tandai selesai, lihat progres, tunjukkan pengingat
+- Highlight fitur utama: stabilitas tandai harian, ringkasan progres, pengingat yang konsisten
+- Siapkan skenario gagal: izin notifikasi ditolak, offline, atau data kosong, dengan respons UX yang baik
+- Tampilkan progres/timeline pengerjaan dan keputusan teknis secara singkat
+- Batasi durasi demo agar fokus dan hindari detail yang tidak perlu
+- Siapkan build/QR cadangan dan perangkat alternatif untuk antisipasi masalah
+
+### Latihan/Persiapan
+- Lakukan QC terhadap checklist siap demo/deploy dan tandai yang sudah terpenuhi
+- Tambahkan test dasar untuk hooks (storage, kalkulasi progres, notifikasi) dalam bentuk skenario dan hasil yang diharapkan
+- Audit izin notifikasi: pastikan alur minta izin, penanganan penolakan, dan status ter-refleksi di UI
+- Rapikan UI untuk empty/error state, pastikan pesan informatif dan aksesibel
+- Siapkan script demo langkah demi langkah, termasuk skenario normal dan skenario gagal
+
+### Referensi Cepat
+- https://docs.expo.dev/build/introduction/
+- https://docs.expo.dev/submit/introduction/
+- https://react-native-async-storage.github.io/async-storage/docs/usage
+- https://docs.expo.dev/versions/latest/sdk/notifications/
+- https://reactnative.dev/docs/optimizing-performance
